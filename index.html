@@ -582,7 +582,7 @@
             
             <div class="text-container">
                 <div class="name-text">Максим [Fresko]</div>
-                <div class="phone-text">+88233333333333333338</div>
+                <div class="phone-text">+888 888 088</div>
                 
                 <div class="counter-section">
                     <div class="counter-label">ПОСЕЩЕНИЙ:</div>
@@ -622,9 +622,12 @@
     </div>
 
     <script>
+        // === ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ НА ВАШИ ===
         const SUPABASE_URL = 'https://gcxujsoqiywkiruzrqdg.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjeHVqc29xaXl3a2lydXpycWRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5MDY0MDIsImV4cCI6MjA4MTQ4MjQwMn0.B4HCviU2uMbUgtBILaFc5p0V6Pvj-0G8eKS-AEMu8as';
+        // === КОНЕЦ ЗАМЕНЫ ===
         
+        // Инициализация Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -645,33 +648,19 @@
                 }, 500);
             }
             
-            skipButton.addEventListener('click', function() {
-                hidePreloader();
-            });
+            skipButton.addEventListener('click', hidePreloader);
+            skipButton.addEventListener('touchstart', hidePreloader);
             
-            skipButton.addEventListener('touchstart', function() {
-                hidePreloader();
-            });
-            
-            preloaderTimeout = setTimeout(function() {
-                hidePreloader();
-            }, 6000);
+            preloaderTimeout = setTimeout(hidePreloader, 6000);
         });
         
         async function initializeContent() {
             const IMAGE_PATHS = {
-                0: '0.png',
-                1: '1.png',
-                2: '2.png',
-                3: '3.png',
-                4: '4.png',
-                5: '5.png',
-                6: '6.png',
-                7: '7.png',
-                8: '8.png',
-                9: '9.png'
+                0: '0.png', 1: '1.png', 2: '2.png', 3: '3.png', 4: '4.png',
+                5: '5.png', 6: '6.png', 7: '7.png', 8: '8.png', 9: '9.png'
             };
             
+            // Функция отображения счетчика
             function displayCounter(number) {
                 const display = document.getElementById('counterDisplay');
                 display.innerHTML = '';
@@ -684,8 +673,9 @@
                     
                     const img = document.createElement('img');
                     img.className = 'digit-image';
-                    img.src = IMAGE_PATHS[digit] || '1.png';
+                    img.src = IMAGE_PATHS[digit];
                     img.alt = digit;
+                    img.loading = 'lazy';
                     
                     const fallback = document.createElement('div');
                     fallback.className = 'digit-fallback';
@@ -702,166 +692,149 @@
                 });
             }
             
-            async function updateCounter() {
+            // Генерация уникального ID посетителя
+            function generateVisitorId() {
+                const storedId = localStorage.getItem('fresko_visitor_id');
+                if (storedId) return storedId;
+                
+                const newId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('fresko_visitor_id', newId);
+                return newId;
+            }
+            
+            // Основная функция обновления счетчика
+            async function updateVisitCounter() {
                 try {
-                    const visitorId = localStorage.getItem('visitor_id') || generateVisitorId();
-                    localStorage.setItem('visitor_id', visitorId);
+                    const visitorId = generateVisitorId();
                     
-                    const userAgent = navigator.userAgent;
-                    const referrer = document.referrer;
+                    // Проверяем, был ли уже этот посетитель сегодня
+                    const today = new Date().toISOString().split('T')[0];
+                    const visitKey = `fresko_visit_${today}`;
                     
-                    const { data: existingVisit, error: checkError } = await supabase
-                        .from('visits')
-                        .select('id')
-                        .eq('visitor_id', visitorId)
-                        .single();
-                    
-                    if (checkError && checkError.code !== 'PGRST116') {
-                        throw checkError;
-                    }
-                    
-                    if (!existingVisit) {
-                        const { data: newVisit, error: insertError } = await supabase
-                            .from('visits')
-                            .insert([
-                                {
-                                    visitor_id: visitorId,
-                                    user_agent: userAgent,
-                                    referrer: referrer,
-                                    visited_at: new Date().toISOString()
-                                }
-                            ]);
+                    if (!localStorage.getItem(visitKey)) {
+                        // Отмечаем посещение на сегодня
+                        localStorage.setItem(visitKey, 'true');
                         
-                        if (insertError) throw insertError;
+                        // Добавляем посещение в Supabase
+                        const { error } = await supabase
+                            .from('visits')
+                            .insert([{
+                                visitor_id: visitorId,
+                                visited_at: new Date().toISOString()
+                            }]);
+                        
+                        if (error) {
+                            console.warn('Ошибка записи в Supabase:', error);
+                            // Используем локальный счетчик как запасной вариант
+                            incrementLocalCounter();
+                        }
                     }
                     
-                    const { data: totalVisits, error: countError } = await supabase
+                    // Получаем общее количество посещений
+                    const { data, error } = await supabase
                         .from('visits')
                         .select('id', { count: 'exact', head: true });
                     
-                    if (countError) throw countError;
+                    if (error) {
+                        console.warn('Ошибка чтения из Supabase:', error);
+                        return getLocalCounter();
+                    }
                     
-                    return totalVisits ? totalVisits.length : 0;
+                    return data ? data.length : 0;
                     
                 } catch (error) {
-                    console.error('Ошибка Supabase:', error);
-                    
-                    let localCount = localStorage.getItem('fresko_counter');
-                    if (!localCount) {
-                        localCount = 1;
-                    } else {
-                        localCount = parseInt(localCount) + 1;
-                    }
-                    localStorage.setItem('fresko_counter', localCount);
-                    return localCount;
+                    console.error('Критическая ошибка:', error);
+                    return getLocalCounter();
                 }
             }
             
-            function generateVisitorId() {
-                return 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            // Локальный счетчик (запасной вариант)
+            function getLocalCounter() {
+                let count = localStorage.getItem('fresko_counter');
+                if (!count) {
+                    count = 1;
+                    localStorage.setItem('fresko_counter', count);
+                }
+                return parseInt(count);
             }
             
+            function incrementLocalCounter() {
+                let count = localStorage.getItem('fresko_counter');
+                count = count ? parseInt(count) + 1 : 1;
+                localStorage.setItem('fresko_counter', count);
+                return count;
+            }
+            
+            // Инициализация счетчика
             try {
-                const totalVisits = await updateCounter();
+                const totalVisits = await updateVisitCounter();
                 displayCounter(totalVisits);
+                console.log('Счетчик установлен:', totalVisits);
             } catch (error) {
-                console.error('Ошибка при получении счетчика:', error);
-                const localCount = localStorage.getItem('fresko_counter') || 1;
+                console.error('Ошибка инициализации счетчика:', error);
+                const localCount = getLocalCounter();
                 displayCounter(localCount);
             }
             
+            // Анимация аватара
             const avatar = document.querySelector('.avatar-container');
             setInterval(() => {
                 const intensity = 0.1 + Math.random() * 0.1;
                 avatar.style.boxShadow = `0 0 ${30 + Math.random() * 20}px rgba(255, 255, 255, ${intensity})`;
             }, 2000);
             
+            // Эффекты кнопок
             document.querySelectorAll('.btn').forEach(btn => {
-                btn.addEventListener('mousedown', function() {
-                    this.style.transform = 'scale(0.98)';
-                    this.style.opacity = '0.9';
-                });
+                const events = {
+                    mousedown: () => { btn.style.transform = 'scale(0.98)'; btn.style.opacity = '0.9'; },
+                    mouseup: () => { btn.style.transform = ''; btn.style.opacity = ''; },
+                    touchstart: () => { btn.style.transform = 'scale(0.98)'; btn.style.opacity = '0.9'; },
+                    touchend: () => { btn.style.transform = ''; btn.style.opacity = ''; }
+                };
                 
-                btn.addEventListener('mouseup', function() {
-                    this.style.transform = '';
-                    this.style.opacity = '';
-                });
-                
-                btn.addEventListener('touchstart', function() {
-                    this.style.transform = 'scale(0.98)';
-                    this.style.opacity = '0.9';
-                });
-                
-                btn.addEventListener('touchend', function() {
-                    this.style.transform = '';
-                    this.style.opacity = '';
+                Object.entries(events).forEach(([event, handler]) => {
+                    btn.addEventListener(event, handler);
                 });
             });
             
+            // Автозапуск видео
             const bgVideo = document.getElementById('background-video');
-            bgVideo.addEventListener('loadedmetadata', function() {
-                this.play().catch(e => console.log("Автовоспроизведение фона не удалось:", e));
-            });
-            
             const avatarVideo = document.querySelector('.avatar-video');
-            avatarVideo.addEventListener('loadedmetadata', function() {
-                this.play().catch(e => console.log("Автовоспроизведение аватара не удалось:", e));
+            
+            [bgVideo, avatarVideo].forEach(video => {
+                video.addEventListener('loadedmetadata', function() {
+                    this.play().catch(e => console.log("Автовоспроизведение не удалось:", e.message));
+                });
             });
         }
         
-        document.addEventListener('touchmove', function(e) {
-            if (e.scale !== 1) {
-                e.preventDefault();
-            }
+        // Запреты и фиксы
+        document.addEventListener('touchmove', (e) => {
+            if (e.scale !== 1) e.preventDefault();
         }, { passive: false });
         
-        document.addEventListener('gesturestart', function(e) {
-            e.preventDefault();
+        ['gesturestart', 'dblclick', 'selectstart'].forEach(event => {
+            document.addEventListener(event, (e) => e.preventDefault());
         });
         
-        document.addEventListener('dblclick', function(e) {
-            e.preventDefault();
-        });
-        
-        document.addEventListener('selectstart', function(e) {
-            e.preventDefault();
-        });
-        
-        let touchStartY = 0;
-        
-        document.addEventListener('touchstart', function(e) {
-            touchStartY = e.touches[0].clientY;
-        }, { passive: true });
-        
-        document.addEventListener('touchmove', function(e) {
-            const touchY = e.touches[0].clientY;
-            const diff = touchY - touchStartY;
-            
-            if (window.scrollY === 0 && diff > 0) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-        
+        // Фиксированный viewport
         function setFixedViewport() {
             const metaViewport = document.querySelector('meta[name="viewport"]');
-            metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+            metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
         }
         
         setFixedViewport();
         
-        let resizeTimer;
-        window.addEventListener('resize', function() {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function() {
-                document.body.style.width = '100%';
-                document.body.style.height = '100%';
-                document.body.style.position = 'fixed';
-            }, 100);
+        // Фиксация размеров
+        window.addEventListener('resize', () => {
+            document.body.style.width = '100%';
+            document.body.style.height = '100%';
+            document.body.style.position = 'fixed';
         });
         
+        // Отключение прокрутки
         document.body.style.overflow = 'hidden';
         document.documentElement.style.overflow = 'hidden';
     </script>
 </body>
 </html>
-
