@@ -35,6 +35,7 @@
         .sound-toggle.muted::after{content:'';position:absolute;top:50%;left:50%;width:24px;height:2px;background:#ff3838;transform:translate(-50%,-50%) rotate(45deg)}
         @media (min-width:768px){.avatar-container{width:200px;height:200px}.name-text{font-size:32px}.phone-text{font-size:16px}.buttons-container{grid-template-columns:repeat(3,1fr);max-width:500px}.btn{height:55px;font-size:14px}}
         @media (max-width:480px){.container{padding:10px;gap:15px}.avatar-container{width:150px;height:150px}.name-text{font-size:24px}.counter-display{height:45px;padding:0 10px}.digit{font-size:20px}.buttons-container{gap:8px}.btn{height:45px;font-size:12px}}
+        .debug-info{position:fixed;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:#0f0;padding:5px;font-size:10px;border-radius:3px;display:none;z-index:9999}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -48,6 +49,8 @@
     <button class="sound-toggle" id="soundToggle">
         <i class="fas fa-volume-up"></i>
     </button>
+    
+    <div class="debug-info" id="debugInfo"></div>
     
     <div class="container">
         <div class="avatar-container">
@@ -63,6 +66,8 @@
         <div class="counter-section">
             <div class="counter-label">ПОСЕЩЕНИЙ:</div>
             <div class="counter-display" id="counterDisplay">
+                <div class="digit">0</div>
+                <div class="digit">0</div>
                 <div class="digit">0</div>
             </div>
         </div>
@@ -106,70 +111,68 @@
         let backgroundMusic;
         let isMusicPlaying = true;
         let supabaseClient = null;
+        let counterValue = 0;
 
         document.addEventListener('DOMContentLoaded', async function() {
+            // Показываем начальные 000
+            animateCounter(0);
+            
+            // Настройка музыки
+            setupMusic();
+            
+            // Инициализируем Supabase
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                
-                backgroundMusic = document.getElementById('backgroundMusic');
-                const soundToggle = document.getElementById('soundToggle');
-                
-                if (backgroundMusic) {
-                    backgroundMusic.volume = 0.4;
-                    
-                    const savedMuted = localStorage.getItem('fresko_music_muted');
-                    if (savedMuted === 'true') {
-                        backgroundMusic.muted = true;
-                        soundToggle.classList.add('muted');
-                        isMusicPlaying = false;
-                    }
-                    
-                    const unlockAudio = () => {
-                        const playPromise = backgroundMusic.play();
-                        if (playPromise !== undefined) {
-                            playPromise.catch(() => {});
-                        }
-                        document.removeEventListener('click', unlockAudio);
-                        document.removeEventListener('touchstart', unlockAudio);
-                    };
-                    
-                    document.addEventListener('click', unlockAudio);
-                    document.addEventListener('touchstart', unlockAudio);
-                    
-                    setTimeout(() => {
-                        backgroundMusic.play().catch(() => {});
-                    }, 500);
-                    
-                    soundToggle.addEventListener('click', toggleMusic);
-                }
-                
-                await updateCounter();
-                
-                const avatarVideo = document.querySelector('.avatar-video');
-                const avatarImage = document.querySelector('.avatar-image');
-                
-                if (avatarVideo && avatarImage) {
-                    setTimeout(() => {
-                        if (avatarVideo.readyState < 2) {
-                            avatarVideo.style.display = 'none';
-                            avatarImage.style.display = 'block';
-                        }
-                    }, 3000);
-                    
-                    avatarVideo.addEventListener('error', () => {
-                        avatarVideo.style.display = 'none';
-                        avatarImage.style.display = 'block';
-                    });
-                }
-                
-                document.addEventListener('gesturestart', (e) => e.preventDefault());
-                document.addEventListener('dblclick', (e) => e.preventDefault());
-                
+                console.log('Supabase инициализирован');
             } catch (error) {
-                console.error('Ошибка инициализации:', error);
-                animateCounter(123);
+                console.error('Ошибка инициализации Supabase:', error);
             }
+            
+            // Запускаем счетчик
+            await handleCounter();
+            
+            // Настройка аватара
+            setupAvatar();
+            
+            // Предотвращение масштабирования
+            document.addEventListener('gesturestart', (e) => e.preventDefault());
+            document.addEventListener('dblclick', (e) => e.preventDefault());
         });
+
+        function setupMusic() {
+            backgroundMusic = document.getElementById('backgroundMusic');
+            const soundToggle = document.getElementById('soundToggle');
+            
+            if (!backgroundMusic) return;
+            
+            backgroundMusic.volume = 0.4;
+            
+            const savedMuted = localStorage.getItem('fresko_music_muted');
+            if (savedMuted === 'true') {
+                backgroundMusic.muted = true;
+                soundToggle.classList.add('muted');
+                isMusicPlaying = false;
+            }
+            
+            const unlockAudio = () => {
+                try {
+                    backgroundMusic.play().catch(e => console.log('Аудио не запустилось:', e));
+                } catch (e) {}
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('touchstart', unlockAudio);
+            };
+            
+            document.addEventListener('click', unlockAudio);
+            document.addEventListener('touchstart', unlockAudio);
+            
+            setTimeout(() => {
+                try {
+                    backgroundMusic.play().catch(e => console.log('Автоплей не сработал:', e));
+                } catch (e) {}
+            }, 1000);
+            
+            soundToggle.addEventListener('click', toggleMusic);
+        }
 
         function toggleMusic() {
             if (!backgroundMusic) return;
@@ -188,112 +191,104 @@
             }
         }
 
-        function getSessionId() {
-            let sessionId = localStorage.getItem('fresko_session_id');
-            if (!sessionId) {
-                sessionId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
-                localStorage.setItem('fresko_session_id', sessionId);
-            }
-            return sessionId;
-        }
-
-        async function updateCounter() {
+        async function handleCounter() {
+            // Сначала всегда показываем анимацию от 0 до начального значения
+            const initialValue = 0;
+            
+            // Пытаемся получить или создать счетчик в базе
             try {
                 if (!supabaseClient) {
-                    console.warn('Supabase не подключен');
+                    console.warn('Supabase не подключен, используем локальное значение');
+                    // Используем localStorage как запасной вариант
+                    let localCount = localStorage.getItem('fresko_local_counter');
+                    if (!localCount) {
+                        localCount = 1;
+                    } else {
+                        localCount = parseInt(localCount) + 1;
+                    }
+                    localStorage.setItem('fresko_local_counter', localCount);
+                    animateCounter(localCount);
                     return;
                 }
-
-                const sessionId = getSessionId();
-
-                // Check if session already logged
-                const { data: existingVisit } = await supabaseClient
-                    .from('visit_logs')
-                    .select('id')
-                    .eq('session_id', sessionId)
-                    .single();
-
-                if (!existingVisit) {
-                    // New visit: increment counter and log
-                    const { error } = await supabaseClient.rpc('increment_visits');
-
-                    if (error) {
-                        console.warn('Ошибка RPC:', error.message);
-                        await updateCounterDirectly();
-                    }
-
-                    // Insert visit log
-                    await supabaseClient
-                        .from('visit_logs')
-                        .insert({
-                            session_id: sessionId,
-                            user_agent: navigator.userAgent
-                        });
-                }
-
-                const totalVisits = await getTotalVisits();
-                animateCounter(totalVisits);
-
-            } catch (error) {
-                console.error('Ошибка счетчика:', error);
-                animateCounter(123);
-            }
-        }
-
-        async function updateCounterDirectly() {
-            try {
+                
+                // Пробуем получить текущее значение
                 const { data: currentData, error: fetchError } = await supabaseClient
                     .from('counter')
                     .select('value')
                     .eq('id', 1)
                     .single();
                 
-                if (fetchError) {
-                    await supabaseClient
+                console.log('Получены данные из БД:', currentData, 'Ошибка:', fetchError);
+                
+                if (fetchError || !currentData) {
+                    // Записи нет - создаем новую
+                    console.log('Создаем новую запись в БД...');
+                    const newValue = 1;
+                    
+                    const { error: insertError } = await supabaseClient
                         .from('counter')
-                        .insert({ id: 1, value: 1 });
+                        .insert({ 
+                            id: 1, 
+                            value: newValue 
+                        });
+                    
+                    if (insertError) {
+                        console.error('Ошибка при создании записи:', insertError);
+                        // Используем localStorage
+                        let localCount = localStorage.getItem('fresko_local_counter');
+                        if (!localCount) localCount = 1;
+                        else localCount = parseInt(localCount) + 1;
+                        localStorage.setItem('fresko_local_counter', localCount);
+                        animateCounter(localCount);
+                    } else {
+                        console.log('Запись создана со значением:', newValue);
+                        animateCounter(newValue);
+                    }
                 } else {
-                    const newValue = (currentData?.value || 0) + 1;
-                    await supabaseClient
+                    // Запись есть - увеличиваем на 1
+                    const newValue = currentData.value + 1;
+                    console.log('Увеличиваем счетчик с', currentData.value, 'до', newValue);
+                    
+                    const { error: updateError } = await supabaseClient
                         .from('counter')
                         .update({ value: newValue })
                         .eq('id', 1);
+                    
+                    if (updateError) {
+                        console.error('Ошибка при обновлении:', updateError);
+                        // Показываем старое значение +1 даже если не обновили
+                        animateCounter(newValue);
+                    } else {
+                        console.log('Счетчик обновлен до:', newValue);
+                        animateCounter(newValue);
+                    }
                 }
                 
             } catch (error) {
-                console.error('Ошибка прямого обновления:', error);
-            }
-        }
-
-        async function getTotalVisits() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('counter')
-                    .select('value')
-                    .eq('id', 1)
-                    .single();
-                
-                if (error || !data) {
-                    return 1;
-                }
-                
-                return Math.max(data.value, 1);
-                
-            } catch (error) {
-                console.warn('Ошибка получения счетчика:', error);
-                return 123;
+                console.error('Критическая ошибка в счетчике:', error);
+                // Запасной вариант - рандомное число
+                const fallbackValue = Math.floor(Math.random() * 1000) + 100;
+                animateCounter(fallbackValue);
             }
         }
 
         function animateCounter(end) {
             const counterDisplay = document.getElementById('counterDisplay');
-            if (!counterDisplay) return;
+            if (!counterDisplay) {
+                console.error('Не найден counterDisplay!');
+                return;
+            }
             
+            console.log('Запускаем анимацию до:', end);
+            
+            // Очищаем дисплей
             counterDisplay.innerHTML = '';
             
+            // Определяем количество цифр (минимум 3)
             const digitsCount = Math.max(end.toString().length, 3);
             const digitElements = [];
             
+            // Создаем цифры
             for (let i = 0; i < digitsCount; i++) {
                 const digitElement = document.createElement('div');
                 digitElement.className = 'digit';
@@ -303,17 +298,17 @@
                 digitElements.push(digitElement);
             }
             
-            animateValue(0, end, digitElements);
-        }
-
-        function animateValue(start, end, digitElements) {
+            // Запускаем анимацию от 0 до конечного значения
             let startTimestamp = null;
-            const duration = 1200;
+            const duration = 1500; // 1.5 секунды
             
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const currentValue = Math.floor(progress * (end - start) + start);
+                
+                // Плавное увеличение с easing
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                const currentValue = Math.floor(easeProgress * (end - 0) + 0);
                 
                 updateDigits(currentValue, digitElements);
                 
@@ -326,9 +321,11 @@
         }
 
         function updateDigits(value, digitElements) {
+            // Форматируем число с пробелами
             const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             const valueDigits = formattedValue.split('');
             
+            // Обновляем каждую цифру
             digitElements.forEach((digitElement, index) => {
                 const digitIndex = digitElements.length - valueDigits.length + index;
                 const digitValue = digitIndex >= 0 ? valueDigits[digitIndex] : '0';
@@ -344,11 +341,63 @@
             });
         }
 
+        function setupAvatar() {
+            const avatarVideo = document.querySelector('.avatar-video');
+            const avatarImage = document.querySelector('.avatar-image');
+            
+            if (!avatarVideo || !avatarImage) return;
+            
+            // Если видео не загрузилось за 3 секунды - показываем картинку
+            setTimeout(() => {
+                if (avatarVideo.readyState < 2) { // HAVE_CURRENT_DATA или меньше
+                    console.log('Видео не загрузилось, показываем картинку');
+                    avatarVideo.style.display = 'none';
+                    avatarImage.style.display = 'block';
+                }
+            }, 3000);
+            
+            avatarVideo.addEventListener('error', () => {
+                console.log('Ошибка загрузки видео, показываем картинку');
+                avatarVideo.style.display = 'none';
+                avatarImage.style.display = 'block';
+            });
+        }
+
         window.addEventListener('beforeunload', () => {
             if (backgroundMusic) {
                 backgroundMusic.pause();
             }
         });
+
+        // Функция для принудительного сброса счетчика (для теста)
+        window.resetCounter = async function() {
+            if (!supabaseClient) {
+                alert('Supabase не подключен!');
+                return;
+            }
+            
+            const { error } = await supabaseClient
+                .from('counter')
+                .update({ value: 0 })
+                .eq('id', 1);
+            
+            if (error) {
+                alert('Ошибка сброса: ' + error.message);
+            } else {
+                alert('Счетчик сброшен к 0!');
+                location.reload();
+            }
+        };
+
+        // Включаем отладку по нажатию Ctrl+Shift+D
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                const debugInfo = document.getElementById('debugInfo');
+                debugInfo.style.display = debugInfo.style.display === 'block' ? 'none' : 'block';
+                debugInfo.textContent = `Счетчик: ${counterValue}\nURL: ${SUPABASE_URL}`;
+            }
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
+</html>
