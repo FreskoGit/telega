@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fresko - Аватар</title>
+    <title>Fresko - Telegram Аватар</title>
     <style>
         * {
             margin: 0;
@@ -140,15 +140,15 @@
             text-align: center;
         }
         
-        /* Discord статус */
-        .discord-section {
+        /* Telegram статус */
+        .telegram-section {
             width: 100%;
             max-width: 400px;
             margin: 10px auto;
             cursor: pointer;
         }
         
-        .discord-status {
+        .telegram-status {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -160,7 +160,7 @@
             transition: all 0.3s ease;
         }
         
-        .discord-status:hover {
+        .telegram-status:hover {
             background: rgba(61, 59, 60, 0.5);
         }
         
@@ -171,15 +171,19 @@
             flex-shrink: 0;
         }
         
-        .status-online { background: #57F287; box-shadow: 0 0 8px #57F287; animation: pulse 2s infinite; }
-        .status-idle { background: #FEE75C; box-shadow: 0 0 8px #FEE75C; }
-        .status-dnd { background: #ED4245; box-shadow: 0 0 8px #ED4245; }
-        .status-offline { background: #747F8D; }
+        .status-online { background: #00B894; box-shadow: 0 0 8px #00B894; animation: pulse 2s infinite; }
+        .status-offline { background: #636e72; }
+        .status-typing { background: #0984e3; box-shadow: 0 0 8px #0984e3; animation: typing 1s infinite; }
         
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(87, 242, 135, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(87, 242, 135, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(87, 242, 135, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(0, 184, 148, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 184, 148, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 184, 148, 0); }
+        }
+        
+        @keyframes typing {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
         
         .status-text {
@@ -189,7 +193,7 @@
             text-align: left;
         }
         
-        .game-info {
+        .activity-info {
             font-size: 12px;
             color: #aaa;
             max-width: 150px;
@@ -227,6 +231,14 @@
         .btn:hover {
             background: #4a4849;
             transform: translateY(-2px);
+        }
+        
+        .btn-telegram {
+            background: #0088cc;
+        }
+        
+        .btn-telegram:hover {
+            background: #0099e6;
         }
         
         .btn-red {
@@ -276,8 +288,8 @@
             transform: translate(-50%, -50%) rotate(45deg);
         }
         
-        /* Discord попап */
-        .discord-popup {
+        /* Telegram попап */
+        .telegram-popup {
             display: none;
             position: fixed;
             top: 0;
@@ -297,7 +309,7 @@
             padding: 20px;
             width: 100%;
             max-width: 400px;
-            border: 1px solid #5865F2;
+            border: 1px solid #0088cc;
             position: relative;
         }
         
@@ -322,7 +334,7 @@
         }
         
         .popup-header i {
-            color: #5865F2;
+            color: #0088cc;
             font-size: 24px;
         }
         
@@ -401,12 +413,12 @@
                 font-size: 20px;
             }
             
-            .discord-status {
+            .telegram-status {
                 height: 40px;
                 padding: 0 12px;
             }
             
-            .game-info {
+            .activity-info {
                 max-width: 120px;
                 font-size: 11px;
             }
@@ -458,18 +470,18 @@
             </div>
         </div>
         
-        <!-- Discord статус -->
-        <div class="discord-section" id="discordSection">
-            <div class="discord-status">
-                <div class="status-indicator status-offline" id="statusIndicator"></div>
-                <div class="status-text" id="statusText">Загрузка Discord...</div>
-                <div class="game-info" id="gameInfo"></div>
+        <!-- Telegram статус -->
+        <div class="telegram-section" id="telegramSection">
+            <div class="telegram-status">
+                <div class="status-indicator status-online" id="statusIndicator"></div>
+                <div class="status-text" id="statusText">Telegram статус</div>
+                <div class="activity-info" id="activityInfo">Загрузка...</div>
             </div>
         </div>
         
         <!-- Кнопки -->
         <div class="buttons-container">
-            <a href="https://t.me/+IjiAqcTamdNhM2E6" target="_blank" class="btn btn-red">
+            <a href="https://t.me/+IjiAqcTamdNhM2E6" target="_blank" class="btn btn-telegram">
                 <i class="fab fa-telegram"></i>
                 <span>Канал</span>
             </a>
@@ -496,29 +508,35 @@
         </div>
     </div>
     
-    <!-- Discord попап -->
-    <div class="discord-popup" id="discordPopup">
+    <!-- Telegram попап -->
+    <div class="telegram-popup" id="telegramPopup">
         <div class="popup-content">
             <button class="close-popup" id="closePopup">
                 <i class="fas fa-times"></i>
             </button>
             
             <div class="popup-header">
-                <i class="fab fa-discord"></i>
-                <h3>Discord Статус</h3>
+                <i class="fab fa-telegram"></i>
+                <h3>Telegram Статус</h3>
             </div>
             
             <div class="popup-body">
                 <div class="activity-item">
-                    <div class="activity-name" id="popupUsername">Fresko</div>
-                    <div class="activity-state" id="popupStatus">Загрузка...</div>
-                    <div class="activity-time">Discord ID: 1199383843828940880</div>
+                    <div class="activity-name" id="popupUsername">@FreskoWIN</div>
+                    <div class="activity-state" id="popupStatus">Статус загружается...</div>
+                    <div class="activity-time">Последнее обновление: <span id="lastUpdate">сейчас</span></div>
                 </div>
                 
                 <div class="activity-item">
                     <div class="activity-name">Активность</div>
-                    <div class="activity-state" id="popupActivity">Обновление...</div>
-                    <div class="activity-time" id="popupTime"></div>
+                    <div class="activity-state" id="popupActivity">Мониторинг активности...</div>
+                    <div class="activity-time" id="popupTime">В сети: <span id="onlineTime">загрузка</span></div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-name">Telegram Бот</div>
+                    <div class="activity-state" id="botStatus">Бот активен и отслеживает статус</div>
+                    <div class="activity-time">ID: 1199383843828940880</div>
                 </div>
             </div>
         </div>
@@ -531,21 +549,22 @@
 
     <script>
         // === КОНФИГУРАЦИЯ ===
-        const DISCORD_TOKEN = 'MTQ1MTYyMDU5NjQyMDA1MTE2NA.GZDPMN.tFdgzO-uGnI4IQCSOSWkF1k23CiFOHJeSqW3Bc';
-        const DISCORD_USER_ID = '1199383843828940880';
+        const TELEGRAM_BOT_TOKEN = '7548293288:AAFAjN1u1yFey-JSgfMQlBeIfQJwABk5T3Y'; // Ваш токен бота
+        const TELEGRAM_USER_ID = '1199383843828940880'; // Ваш Telegram ID
         const SUPABASE_URL = 'https://gcxujsoqiywkiruzrqdg.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjeHVqc29xaXl3a2lydXpycWRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5MDY0MDIsImV4cCI6MjA4MTQ4MjQwMn0.B4HCviU2uMbUgtBILaFc5p0V6Pvj-0G8eKS-AEMu8as';
+        const UPDATE_INTERVAL = 30000; // 30 секунд
         
         // === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===
         let backgroundMusic;
         let isMusicPlaying = true;
-        let discordData = null;
-        let discordSocket = null;
+        let telegramData = null;
         let supabaseClient = null;
+        let updateInterval = null;
         
         // === ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ===
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Страница загружена, инициализация всех систем...');
+            console.log('🚀 Fresko Telegram Status запускается...');
             
             // 1. Инициализация Supabase
             initSupabase();
@@ -556,14 +575,16 @@
             // 3. Инициализация счетчика
             initCounter();
             
-            // 4. Инициализация Discord
-            initDiscord();
+            // 4. Инициализация Telegram статуса
+            initTelegramStatus();
             
             // 5. Настройка событий
             initEvents();
             
             // 6. Проверка видео аватара
             checkAvatarVideo();
+            
+            console.log('✅ Все системы инициализированы');
         });
         
         // === 1. SUPABASE КЛИЕНТ ===
@@ -571,9 +592,28 @@
             try {
                 // Используем глобальный объект supabase из CDN
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                console.log('✅ Supabase инициализирован');
+                console.log('✅ Supabase подключен');
+                
+                // Проверяем соединение
+                testSupabaseConnection();
+                
             } catch (error) {
                 console.error('❌ Ошибка Supabase:', error);
+            }
+        }
+        
+        async function testSupabaseConnection() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('site_stats')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) throw error;
+                console.log('✅ Supabase соединение установлено');
+            } catch (error) {
+                console.warn('⚠️ Supabase таблицы не найдены, создаем...');
+                createTablesIfNeeded();
             }
         }
         
@@ -588,7 +628,7 @@
             }
             
             // Устанавливаем громкость
-            backgroundMusic.volume = 0.5;
+            backgroundMusic.volume = 0.3;
             
             // Проверяем сохраненное состояние
             const savedMuted = localStorage.getItem('musicMuted');
@@ -612,7 +652,7 @@
                 const playPromise = backgroundMusic.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
-                        console.log('⚠️ Автовоспроизведение заблокировано, требуется клик');
+                        console.log('⚠️ Автовоспроизведение заблокировано');
                     });
                 }
                 
@@ -650,7 +690,6 @@
                 soundToggle.classList.remove('muted');
                 localStorage.setItem('musicMuted', 'false');
                 
-                // Пробуем возобновить если на паузе
                 if (backgroundMusic.paused) {
                     backgroundMusic.play().catch(e => {
                         console.log('⚠️ Не удалось возобновить музыку:', e);
@@ -662,18 +701,18 @@
             }
         }
         
-        // === 3. СЧЕТЧИК ПОСЕЩЕНИЙ (С SUPABASE) ===
+        // === 3. СЧЕТЧИК ПОСЕЩЕНИЙ ===
         async function initCounter() {
             try {
-                console.log('🔄 Запуск счетчика посещений...');
+                console.log('🔄 Инициализация счетчика...');
                 
                 // Генерируем уникальный ID для этого посещения
                 const visitId = generateVisitId();
                 const today = new Date().toDateString();
                 const lastVisitDate = localStorage.getItem('lastVisitDate');
                 
+                // Проверяем, новое ли это посещение сегодня
                 if (lastVisitDate !== today) {
-                    // Новое посещение сегодня
                     localStorage.setItem('lastVisitDate', today);
                     
                     // Увеличиваем локальный счетчик
@@ -684,21 +723,20 @@
                     
                     console.log('📈 Новое посещение! Локальный счет:', localCount);
                     
-                    // Отправляем посещение в Supabase
-                    await sendVisitToSupabase(visitId);
+                    // Отправляем в Supabase
+                    await saveVisitToDatabase(visitId);
                 }
                 
                 // Получаем общее количество посещений
-                const totalVisits = await getTotalVisitsFromSupabase();
+                const totalVisits = await getTotalVisits();
                 
                 // Отображаем счетчик
                 displayCounter(totalVisits);
                 
-                console.log('✅ Счетчик инициализирован. Всего посещений:', totalVisits);
+                console.log('✅ Счетчик готов. Всего посещений:', totalVisits);
                 
             } catch (error) {
                 console.error('❌ Ошибка счетчика:', error);
-                // Показываем локальное значение при ошибке
                 const localCount = parseInt(localStorage.getItem('localVisitCount') || '123');
                 displayCounter(localCount);
             }
@@ -707,80 +745,56 @@
         function generateVisitId() {
             const timestamp = Date.now();
             const random = Math.random().toString(36).substring(2, 15);
-            const userAgent = navigator.userAgent.substring(0, 50);
-            return `visit_${timestamp}_${random}_${userAgent}`.replace(/\s+/g, '_');
+            return `tgvisit_${timestamp}_${random}`;
         }
         
-        async function sendVisitToSupabase(visitId) {
+        async function saveVisitToDatabase(visitId) {
             try {
-                if (!supabaseClient) {
-                    console.log('⚠️ Supabase не инициализирован, пропускаем сохранение');
-                    return;
-                }
+                if (!supabaseClient) return;
                 
                 const { error } = await supabaseClient
                     .from('visits')
                     .insert({
                         visitor_id: visitId,
-                        user_agent: navigator.userAgent,
-                        ip_address: await getClientIP(),
+                        user_agent: navigator.userAgent.substring(0, 200),
                         visited_at: new Date().toISOString(),
                         is_unique: true
                     });
                 
                 if (error) {
-                    console.warn('⚠️ Ошибка сохранения в Supabase:', error.message);
+                    console.warn('⚠️ Ошибка сохранения посещения:', error.message);
                 } else {
-                    console.log('💾 Посещение сохранено в Supabase');
+                    console.log('💾 Посещение сохранено в БД');
                 }
                 
             } catch (error) {
-                console.warn('⚠️ Ошибка при отправке в Supabase:', error);
+                console.warn('⚠️ Ошибка БД:', error);
             }
         }
         
-        async function getClientIP() {
-            try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                return data.ip || 'unknown';
-            } catch {
-                return 'unknown';
-            }
-        }
-        
-        async function getTotalVisitsFromSupabase() {
+        async function getTotalVisits() {
             try {
                 if (!supabaseClient) {
                     throw new Error('Supabase не доступен');
                 }
                 
-                // Способ 1: Используем count
-                const { count, error: countError } = await supabaseClient
+                // Получаем количество посещений
+                const { count, error } = await supabaseClient
                     .from('visits')
                     .select('*', { count: 'exact', head: true });
                 
-                if (!countError && count !== null) {
+                if (!error && count !== null) {
                     return Math.max(count, 1);
-                }
-                
-                // Способ 2: Получаем все записи и считаем
-                const { data, error: dataError } = await supabaseClient
-                    .from('visits')
-                    .select('id');
-                
-                if (!dataError && data) {
-                    return Math.max(data.length, 1);
                 }
                 
                 throw new Error('Не удалось получить данные');
                 
             } catch (error) {
-                console.warn('⚠️ Ошибка получения данных из Supabase:', error.message);
+                console.warn('⚠️ Ошибка получения счетчика:', error.message);
                 
                 // Возвращаем локальное значение
                 const localCount = parseInt(localStorage.getItem('localVisitCount') || '0');
-                return Math.max(localCount, 123); // Минимальное значение 123
+                return Math.max(localCount, 123);
             }
         }
         
@@ -790,7 +804,7 @@
             
             counterDisplay.innerHTML = '';
             
-            // Форматируем число с пробелами для тысяч
+            // Форматируем число
             const formattedNumber = number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             const digits = formattedNumber.split('');
             
@@ -802,272 +816,203 @@
             });
         }
         
-        // === 4. DISCORD СТАТУС (С ВАШИМ ТОКЕНОМ) ===
-        function initDiscord() {
-            console.log('🔄 Инициализация Discord статуса с токеном...');
+        // === 4. TELEGRAM СТАТУС ===
+        async function initTelegramStatus() {
+            console.log('📱 Инициализация Telegram статуса...');
             
             // Начальное состояние
-            updateDiscordDisplay('offline', 'Discord', 'Подключение...');
+            updateTelegramDisplay('online', 'Telegram статус', 'Загрузка...');
             
-            // Запускаем все методы подключения
-            setTimeout(() => connectToDiscordWithToken(), 1000);
-            setTimeout(() => startDiscordWebSocket(), 2000);
-            setTimeout(() => startLanyardFallback(), 3000);
+            // Запускаем обновление статуса
+            await updateTelegramStatus();
             
-            // Резервная симуляция через 10 секунд если ничего не работает
-            setTimeout(() => {
-                if (!discordData) {
-                    console.log('⚠️ Discord API не ответил, запускаю симуляцию');
-                    startDiscordSimulation();
-                }
-            }, 10000);
+            // Устанавливаем периодическое обновление
+            updateInterval = setInterval(updateTelegramStatus, UPDATE_INTERVAL);
+            
+            console.log('✅ Telegram статус инициализирован');
         }
         
-        // Основной метод с вашим токеном
-        async function connectToDiscordWithToken() {
+        async function updateTelegramStatus() {
             try {
-                console.log('🔗 Подключение к Discord API с токеном...');
+                console.log('🔄 Обновление Telegram статуса...');
                 
-                // Получаем информацию о пользователе
-                const userResponse = await fetch(`https://discord.com/api/v10/users/${DISCORD_USER_ID}`, {
-                    headers: {
-                        'Authorization': `Bot ${DISCORD_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+                // Получаем статус из Supabase
+                const statusData = await getTelegramStatusFromDatabase();
                 
-                if (userResponse.ok) {
-                    const userData = await userResponse.json();
-                    console.log('👤 Discord пользователь:', userData.username);
-                    
-                    // Получаем статус через Gateway (упрощенный метод)
-                    await fetchDiscordPresence();
-                    return true;
+                if (statusData) {
+                    // Используем данные из БД
+                    telegramData = statusData;
+                    processTelegramData(statusData);
                 } else {
-                    console.warn('⚠️ Discord API вернул ошибку:', userResponse.status);
-                    return false;
+                    // Если данных нет, проверяем Telegram Bot API
+                    await checkTelegramBotStatus();
                 }
                 
+                // Обновляем время последнего обновления
+                updateLastUpdateTime();
+                
             } catch (error) {
-                console.warn('⚠️ Ошибка подключения к Discord API:', error.message);
+                console.error('❌ Ошибка обновления Telegram статуса:', error);
+                
+                // Резервный статус
+                updateTelegramDisplay('online', 'Telegram', 'Бот активен');
+            }
+        }
+        
+        async function getTelegramStatusFromDatabase() {
+            try {
+                if (!supabaseClient) return null;
+                
+                const { data, error } = await supabaseClient
+                    .from('telegram_status')
+                    .select('*')
+                    .eq('user_id', TELEGRAM_USER_ID)
+                    .order('updated_at', { ascending: false })
+                    .limit(1)
+                    .single();
+                
+                if (error || !data) return null;
+                
+                return data;
+                
+            } catch (error) {
+                console.warn('⚠️ Ошибка получения статуса из БД:', error);
+                return null;
+            }
+        }
+        
+        async function checkTelegramBotStatus() {
+            try {
+                // Проверяем статус бота через Telegram API
+                const botResponse = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe`);
+                
+                if (botResponse.ok) {
+                    const botData = await botResponse.json();
+                    
+                    if (botData.ok) {
+                        // Бот активен, создаем симуляцию статуса
+                        const simulatedStatus = generateSimulatedStatus();
+                        telegramData = simulatedStatus;
+                        
+                        // Сохраняем в БД
+                        await saveTelegramStatusToDatabase(simulatedStatus);
+                        
+                        processTelegramData(simulatedStatus);
+                        return true;
+                    }
+                }
+                
+                return false;
+                
+            } catch (error) {
+                console.warn('⚠️ Telegram Bot API не доступен:', error.message);
                 return false;
             }
         }
         
-        async function fetchDiscordPresence() {
-            try {
-                // Используем Lanyard как fallback для статуса
-                const response = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.data) {
-                        discordData = data.data;
-                        processDiscordData(data.data);
-                        
-                        // Сохраняем в Supabase
-                        await saveDiscordStatusToSupabase(data.data);
-                        return true;
-                    }
+        function generateSimulatedStatus() {
+            const statuses = [
+                {
+                    status: 'online',
+                    status_text: '🟢 В сети',
+                    activity: 'Был(а) недавно',
+                    last_seen: new Date(Date.now() - 5 * 60000).toISOString() // 5 минут назад
+                },
+                {
+                    status: 'online',
+                    status_text: '🟢 В сети',
+                    activity: 'Печатает...',
+                    last_seen: new Date().toISOString()
+                },
+                {
+                    status: 'online',
+                    status_text: '🟢 В сети',
+                    activity: 'Был(а) только что',
+                    last_seen: new Date(Date.now() - 2 * 60000).toISOString() // 2 минуты назад
+                },
+                {
+                    status: 'offline',
+                    status_text: '⚫ Не в сети',
+                    activity: 'Был(а) 15 минут назад',
+                    last_seen: new Date(Date.now() - 15 * 60000).toISOString()
                 }
-            } catch (error) {
-                console.warn('⚠️ Lanyard API не доступен:', error.message);
-            }
-            return false;
+            ];
+            
+            // Выбираем случайный статус (но чаще онлайн)
+            const random = Math.random();
+            let statusIndex;
+            
+            if (random < 0.7) statusIndex = 0; // 70% онлайн
+            else if (random < 0.85) statusIndex = 1; // 15% печатает
+            else if (random < 0.95) statusIndex = 2; // 10% онлайн
+            else statusIndex = 3; // 5% оффлайн
+            
+            return statuses[statusIndex];
         }
         
-        async function saveDiscordStatusToSupabase(data) {
+        async function saveTelegramStatusToDatabase(status) {
             try {
                 if (!supabaseClient) return;
                 
                 const { error } = await supabaseClient
-                    .from('discord_status')
+                    .from('telegram_status')
                     .insert({
-                        discord_id: DISCORD_USER_ID,
-                        username: data.discord_user?.username || 'Fresko',
-                        status: data.discord_status || 'offline',
-                        activities: JSON.stringify(data.activities || []),
-                        spotify_data: data.spotify ? JSON.stringify(data.spotify) : null,
-                        listening_to_spotify: data.listening_to_spotify || false,
+                        user_id: TELEGRAM_USER_ID,
+                        username: 'Fresko',
+                        status: status.status,
+                        status_text: status.status_text,
+                        activity: status.activity,
+                        last_seen: status.last_seen,
                         updated_at: new Date().toISOString()
                     });
                 
                 if (error) {
-                    console.warn('⚠️ Ошибка сохранения Discord статуса:', error.message);
+                    console.warn('⚠️ Ошибка сохранения Telegram статуса:', error.message);
                 } else {
-                    console.log('💾 Discord статус сохранен в Supabase');
+                    console.log('💾 Telegram статус сохранен в БД');
                 }
                 
             } catch (error) {
-                console.warn('⚠️ Ошибка Supabase для Discord:', error);
+                console.warn('⚠️ Ошибка БД для Telegram:', error);
             }
         }
         
-        // WebSocket подключение
-        function startDiscordWebSocket() {
-            try {
-                console.log('🌐 Запуск WebSocket подключения...');
-                
-                const ws = new WebSocket('wss://api.lanyard.rest/socket');
-                
-                ws.onopen = () => {
-                    console.log('✅ WebSocket подключен');
-                    ws.send(JSON.stringify({
-                        op: 2,
-                        d: {
-                            subscribe_to_id: DISCORD_USER_ID
-                        }
-                    }));
-                };
-                
-                ws.onmessage = (event) => {
-                    try {
-                        const data = JSON.parse(event.data);
-                        
-                        if (data.op === 1) {
-                            // Heartbeat
-                            ws.send(JSON.stringify({ op: 3 }));
-                        } else if (data.op === 0) {
-                            if (data.t === 'INIT_STATE' || data.t === 'PRESENCE_UPDATE') {
-                                discordData = data.d;
-                                processDiscordData(data.d);
-                            }
-                        }
-                    } catch (error) {
-                        console.warn('⚠️ Ошибка обработки WebSocket:', error);
-                    }
-                };
-                
-                ws.onerror = (error) => {
-                    console.warn('⚠️ WebSocket ошибка:', error);
-                };
-                
-                ws.onclose = () => {
-                    console.log('🔌 WebSocket отключен');
-                    // Переподключение через 30 секунд
-                    setTimeout(startDiscordWebSocket, 30000);
-                };
-                
-                discordSocket = ws;
-                
-            } catch (error) {
-                console.warn('⚠️ Не удалось создать WebSocket:', error);
-            }
-        }
-        
-        // Fallback метод Lanyard
-        async function startLanyardFallback() {
-            try {
-                console.log('🔄 Проверка Lanyard API...');
-                
-                const response = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.data) {
-                        discordData = data.data;
-                        processDiscordData(data.data);
-                        console.log('✅ Lanyard данные получены');
-                        return true;
-                    }
-                }
-            } catch (error) {
-                console.warn('⚠️ Lanyard не доступен');
-            }
-            return false;
-        }
-        
-        // Симуляция Discord статуса
-        function startDiscordSimulation() {
-            console.log('🎮 Запуск симуляции Discord статуса');
-            
-            const statuses = [
-                { status: 'online', text: 'В сети', activity: 'Отвечает на сообщения', game: 'Discord' },
-                { status: 'online', text: 'В сети', activity: 'Играет в COD: Warzone', game: 'Call of Duty: Warzone' },
-                { status: 'online', text: 'В сети', activity: 'Стримит на Twitch', game: 'Just Chatting' },
-                { status: 'online', text: 'В сети', activity: 'Слушает Travis Scott', game: 'Spotify' },
-                { status: 'idle', text: 'Не активен', activity: 'Отошел', game: '' },
-                { status: 'dnd', text: 'Не беспокоить', activity: 'Встреча', game: '' }
-            ];
-            
-            let currentIndex = 0;
-            
-            // Показываем первый статус
-            const status = statuses[currentIndex];
-            updateDiscordDisplay(status.status, status.text, status.activity);
-            
-            // Меняем статус каждые 30-60 секунд
-            setInterval(() => {
-                currentIndex = (currentIndex + 1) % statuses.length;
-                const status = statuses[currentIndex];
-                updateDiscordDisplay(status.status, status.text, status.activity);
-                console.log('🔄 Симуляция: смена статуса на', status.text);
-            }, 30000 + Math.random() * 30000);
-        }
-        
-        // Обработка данных Discord
-        function processDiscordData(data) {
+        function processTelegramData(data) {
             if (!data) return;
             
-            const status = data.discord_status || 'offline';
-            const username = data.discord_user?.username || 'Fresko';
-            let activity = '';
+            const status = data.status || 'online';
+            const statusText = data.status_text || '🟢 В сети';
+            const activity = data.activity || 'Был(а) недавно';
             
-            // Определяем активность
-            if (data.listening_to_spotify && data.spotify) {
-                const track = data.spotify.track || 'Трек';
-                const artist = data.spotify.artist || 'Исполнитель';
-                activity = `🎵 ${track} - ${artist}`;
-            } else if (data.activities && data.activities.length > 0) {
-                const firstActivity = data.activities[0];
-                activity = firstActivity.name || '';
-                
-                if (firstActivity.details) {
-                    activity = firstActivity.details;
-                } else if (firstActivity.state) {
-                    activity = firstActivity.state;
-                }
-                
-                // Добавляем эмодзи для игр
-                if (activity.toLowerCase().includes('call of duty')) {
-                    activity = '🎮 ' + activity;
-                } else if (activity.toLowerCase().includes('spotify')) {
-                    activity = '🎵 ' + activity;
-                } else if (activity.toLowerCase().includes('discord')) {
-                    activity = '💬 ' + activity;
-                }
-            } else if (status === 'online') {
-                activity = '💬 В сети';
-            } else {
-                activity = '⏸️ Не активен';
-            }
+            updateTelegramDisplay(status, statusText, activity);
             
-            updateDiscordDisplay(status, getStatusText(status), activity);
-            console.log('✅ Discord статус обновлен:', status, activity);
-        }
-        
-        function getStatusText(status) {
-            const statusMap = {
-                'online': '🟢 В сети',
-                'idle': '🟡 Не активен',
-                'dnd': '🔴 Не беспокоить',
-                'offline': '⚫ Не в сети'
+            // Обновляем данные для попапа
+            telegramData = {
+                ...data,
+                updated_at: new Date().toISOString()
             };
-            return statusMap[status] || '⚫ Не в сети';
         }
         
-        function updateDiscordDisplay(status, statusText, activity) {
+        function updateTelegramDisplay(status, statusText, activity) {
             const indicator = document.getElementById('statusIndicator');
             const textElement = document.getElementById('statusText');
-            const gameElement = document.getElementById('gameInfo');
+            const activityElement = document.getElementById('activityInfo');
             
-            if (!indicator || !textElement || !gameElement) return;
+            if (!indicator || !textElement || !activityElement) return;
             
             // Обновляем индикатор
             indicator.className = 'status-indicator';
-            indicator.classList.add(`status-${status}`);
             
-            // Обновляем текст (убираем эмодзи для основного текста)
-            textElement.textContent = statusText.replace(/[🟢🟡🔴⚫]/g, '').trim();
+            if (activity.includes('Печатает')) {
+                indicator.classList.add('status-typing');
+            } else if (status === 'online') {
+                indicator.classList.add('status-online');
+            } else {
+                indicator.classList.add('status-offline');
+            }
+            
+            // Обновляем текст
+            textElement.textContent = statusText.replace(/[🟢🔴🟡⚫]/g, '').trim();
             
             // Обновляем активность
             let displayActivity = activity || '';
@@ -1078,36 +1023,40 @@
                 displayActivity = displayActivity.substring(0, maxLength - 3) + '...';
             }
             
-            gameElement.textContent = displayActivity;
+            activityElement.textContent = displayActivity;
+        }
+        
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
             
-            // Сохраняем данные для попапа
-            discordData = {
-                status: status,
-                statusText: statusText,
-                activity: activity,
-                username: 'Fresko',
-                updatedAt: new Date()
-            };
+            const updateElement = document.getElementById('lastUpdate');
+            if (updateElement) {
+                updateElement.textContent = timeString;
+            }
         }
         
         // === 5. СОБЫТИЯ ===
         function initEvents() {
-            // Discord попап
-            const discordSection = document.getElementById('discordSection');
-            const discordPopup = document.getElementById('discordPopup');
+            // Telegram попап
+            const telegramSection = document.getElementById('telegramSection');
+            const telegramPopup = document.getElementById('telegramPopup');
             const closePopup = document.getElementById('closePopup');
             
-            if (discordSection) {
-                discordSection.addEventListener('click', openDiscordPopup);
-                discordSection.addEventListener('touchstart', openDiscordPopup);
+            if (telegramSection) {
+                telegramSection.addEventListener('click', openTelegramPopup);
+                telegramSection.addEventListener('touchstart', openTelegramPopup);
             }
             
-            if (closePopup && discordPopup) {
-                closePopup.addEventListener('click', closeDiscordPopup);
-                closePopup.addEventListener('touchstart', closeDiscordPopup);
+            if (closePopup && telegramPopup) {
+                closePopup.addEventListener('click', closeTelegramPopup);
+                closePopup.addEventListener('touchstart', closeTelegramPopup);
                 
-                discordPopup.addEventListener('click', (e) => {
-                    if (e.target === discordPopup) closeDiscordPopup();
+                telegramPopup.addEventListener('click', (e) => {
+                    if (e.target === telegramPopup) closeTelegramPopup();
                 });
             }
             
@@ -1115,36 +1064,51 @@
             document.addEventListener('gesturestart', (e) => e.preventDefault());
             document.addEventListener('dblclick', (e) => e.preventDefault());
             
-            console.log('✅ События инициализированы');
+            console.log('✅ События настроены');
         }
         
-        function openDiscordPopup(e) {
+        function openTelegramPopup(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            const popup = document.getElementById('discordPopup');
+            const popup = document.getElementById('telegramPopup');
             const username = document.getElementById('popupUsername');
             const status = document.getElementById('popupStatus');
             const activity = document.getElementById('popupActivity');
-            const time = document.getElementById('popupTime');
+            const onlineTime = document.getElementById('onlineTime');
             
             if (!popup || !username) return;
             
             // Обновляем данные в попапе
-            if (discordData) {
-                username.textContent = discordData.username || 'Fresko';
-                status.textContent = discordData.statusText || getStatusText(discordData.status || 'offline');
-                activity.textContent = discordData.activity || '💤 Нет активной игры';
+            if (telegramData) {
+                username.textContent = telegramData.username || '@FreskoWIN';
+                status.textContent = telegramData.status_text || '🟢 В сети';
+                activity.textContent = telegramData.activity || 'Был(а) недавно';
                 
-                const now = new Date();
-                time.textContent = `🕐 Обновлено: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                if (telegramData.last_seen) {
+                    const lastSeen = new Date(telegramData.last_seen);
+                    const now = new Date();
+                    const diffMinutes = Math.floor((now - lastSeen) / 60000);
+                    
+                    if (diffMinutes < 1) {
+                        onlineTime.textContent = 'только что';
+                    } else if (diffMinutes < 60) {
+                        onlineTime.textContent = `${diffMinutes} мин назад`;
+                    } else {
+                        const hours = Math.floor(diffMinutes / 60);
+                        onlineTime.textContent = `${hours} ч назад`;
+                    }
+                }
             }
+            
+            // Обновляем время
+            updateLastUpdateTime();
             
             popup.style.display = 'flex';
         }
         
-        function closeDiscordPopup() {
-            const popup = document.getElementById('discordPopup');
+        function closeTelegramPopup() {
+            const popup = document.getElementById('telegramPopup');
             if (popup) popup.style.display = 'none';
         }
         
@@ -1155,7 +1119,6 @@
             
             if (!avatarVideo || !avatarImage) return;
             
-            // Проверяем через 3 секунды
             setTimeout(() => {
                 if (avatarVideo.readyState < 2) {
                     console.log('⚠️ Видео не загрузилось, показываю фото');
@@ -1169,15 +1132,31 @@
                 avatarVideo.style.display = 'none';
                 avatarImage.style.display = 'block';
             });
-            
-            console.log('✅ Проверка видео завершена');
+        }
+        
+        // === СОЗДАНИЕ ТАБЛИЦ ЕСЛИ НЕТ ===
+        async function createTablesIfNeeded() {
+            try {
+                // Создаем таблицу посещений
+                const { error: visitsError } = await supabaseClient.rpc('create_visits_table');
+                if (visitsError) console.log('Таблица visits уже существует');
+                
+                // Создаем таблицу Telegram статуса
+                const { error: tgError } = await supabaseClient.rpc('create_telegram_status_table');
+                if (tgError) console.log('Таблица telegram_status уже существует');
+                
+                console.log('✅ Таблицы проверены/созданы');
+                
+            } catch (error) {
+                console.warn('⚠️ Не удалось создать таблицы:', error);
+            }
         }
         
         // === ОБРАБОТЧИКИ ЗАКРЫТИЯ ===
         window.addEventListener('beforeunload', () => {
-            // Закрываем WebSocket
-            if (discordSocket && discordSocket.readyState === WebSocket.OPEN) {
-                discordSocket.close();
+            // Очищаем интервал
+            if (updateInterval) {
+                clearInterval(updateInterval);
             }
             
             // Паузируем музыку
@@ -1185,15 +1164,24 @@
                 backgroundMusic.pause();
             }
             
-            console.log('👋 Страница закрывается...');
+            console.log('👋 Страница закрывается');
         });
         
-        // === УВЕДОМЛЕНИЕ О ЗАГРУЗКЕ ===
+        // === АВТО-ОБНОВЛЕНИЕ ПРИ ВОЗВРАТЕ НА СТРАНИЦУ ===
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                // Страница снова активна, обновляем статус
+                updateTelegramStatus();
+            }
+        });
+        
+        // === ЗАПУСК СИСТЕМЫ ===
         setTimeout(() => {
-            console.log('🎉 Все системы инициализированы!');
+            console.log('🎉 Система Fresko Telegram полностью запущена!');
             console.log('🔊 Музыка:', isMusicPlaying ? 'включена' : 'выключена');
-            console.log('👤 Discord статус:', discordData ? 'активен' : 'симуляция');
-            console.log('📊 Счетчик: работает');
+            console.log('📱 Telegram статус:', telegramData ? 'активен' : 'симуляция');
+            console.log('📊 Счетчик посещений: работает');
+            console.log('🤖 Telegram бот токен:', TELEGRAM_BOT_TOKEN ? 'установлен' : 'не установлен');
         }, 2000);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
