@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Аватар</title>
     <style>
+        /* Существующие стили остаются без изменений */
         #background-video {
             position: fixed;
             top: 0;
@@ -196,6 +197,245 @@
             display: none;
             line-height: 1;
             flex-shrink: 0;
+        }
+        
+        /* НОВЫЕ СТИЛИ ДЛЯ DISCORD АКТИВНОСТИ */
+        .discord-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            width: 100%;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .discord-section:hover {
+            transform: translateY(-2px);
+        }
+        
+        .discord-label {
+            font-size: 14px;
+            color: #666666;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .discord-label i {
+            color: #5865F2;
+            font-size: 16px;
+        }
+        
+        .discord-status {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            height: 50px;
+            min-height: 50px;
+            background: rgba(61, 59, 60, 0.3);
+            border-radius: 12px;
+            padding: 10px 20px;
+            border: 1px solid #444;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #57F287;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-indicator.online {
+            background-color: #57F287;
+        }
+        
+        .status-indicator.idle {
+            background-color: #FEE75C;
+        }
+        
+        .status-indicator.dnd {
+            background-color: #ED4245;
+        }
+        
+        .status-text {
+            font-size: 15px;
+            color: #fff;
+            font-weight: 500;
+            flex-grow: 1;
+            text-align: center;
+        }
+        
+        .game-info {
+            font-size: 13px;
+            color: #aaa;
+            font-weight: 400;
+        }
+        
+        .discord-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .discord-popup-content {
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid #5865F2;
+            box-shadow: 0 15px 35px rgba(88, 101, 242, 0.2);
+            position: relative;
+            animation: popupSlide 0.3s ease-out;
+        }
+        
+        .popup-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .popup-header i {
+            font-size: 32px;
+            color: #5865F2;
+        }
+        
+        .popup-header h3 {
+            font-size: 22px;
+            color: #fff;
+            margin: 0;
+        }
+        
+        .popup-body {
+            margin-bottom: 25px;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .activity-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: linear-gradient(145deg, #5865F2, #4752C4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .activity-details {
+            flex-grow: 1;
+        }
+        
+        .activity-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .activity-state {
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .popup-footer {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+        
+        .close-popup {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #aaa;
+            transition: all 0.3s ease;
+        }
+        
+        .close-popup:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(87, 242, 135, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(87, 242, 135, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(87, 242, 135, 0);
+            }
+        }
+        
+        @keyframes popupSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
         
         .loading-dots {
@@ -493,6 +733,20 @@
                 font-size: 34px;
             }
             
+            .discord-status {
+                height: 45px;
+                min-height: 45px;
+                padding: 8px 15px;
+            }
+            
+            .status-text {
+                font-size: 14px;
+            }
+            
+            .game-info {
+                font-size: 12px;
+            }
+            
             .buttons-container {
                 grid-template-columns: 1fr;
                 max-width: 300px;
@@ -577,6 +831,24 @@
                 font-size: 28px;
             }
             
+            .discord-section {
+                margin-top: 10px;
+            }
+            
+            .discord-status {
+                height: 40px;
+                min-height: 40px;
+                padding: 6px 12px;
+            }
+            
+            .status-text {
+                font-size: 13px;
+            }
+            
+            .game-info {
+                font-size: 11px;
+            }
+            
             .buttons-container {
                 max-width: 280px;
                 gap: 10px;
@@ -655,6 +927,12 @@
                 font-size: 24px;
             }
             
+            .discord-status {
+                height: 35px;
+                min-height: 35px;
+                padding: 5px 10px;
+            }
+            
             .buttons-container {
                 max-width: 260px;
             }
@@ -727,6 +1005,44 @@
         </div>
     </div>
     
+    <!-- Попап Discord активности -->
+    <div id="discordPopup" class="discord-popup">
+        <div class="discord-popup-content">
+            <div class="popup-header">
+                <i class="fab fa-discord"></i>
+                <h3>Мой Discord Статус</h3>
+                <div class="close-popup" id="closePopup">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="popup-body">
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="activity-details">
+                        <div class="activity-name" id="popupGameName">Загрузка...</div>
+                        <div class="activity-state" id="popupGameState">Обновляется...</div>
+                        <div class="activity-time" id="popupGameTime"></div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-headphones"></i>
+                    </div>
+                    <div class="activity-details">
+                        <div class="activity-name">В сети</div>
+                        <div class="activity-state" id="popupStatus">Подключение к Discord...</div>
+                        <div class="activity-time">Discord: Fresko#0001</div>
+                    </div>
+                </div>
+            </div>
+            <div class="popup-footer">
+                Статус обновляется в реальном времени
+            </div>
+        </div>
+    </div>
+    
     <!-- Аудио элемент для фоновой музыки -->
     <audio id="background-music" loop>
         <source src="Top.mp3" type="audio/mpeg">
@@ -765,6 +1081,19 @@
                             <span></span>
                             <span></span>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- НОВЫЙ БЛОК DISCORD АКТИВНОСТИ -->
+                <div class="discord-section" id="discordActivity">
+                    <div class="discord-label">
+                        <i class="fab fa-discord"></i>
+                        Discord активность
+                    </div>
+                    <div class="discord-status">
+                        <div class="status-indicator online" id="statusIndicator"></div>
+                        <div class="status-text" id="statusText">В сети</div>
+                        <div class="game-info" id="gameInfo">Загрузка...</div>
                     </div>
                 </div>
             </div>
@@ -816,11 +1145,30 @@
         let isMusicPlaying = true;
         let permissionsGranted = false;
         
+        // Discord активность (имитация - здесь можно подключить Discord API)
+        const discordStatus = {
+            online: true,
+            status: 'В сети',
+            game: {
+                name: 'Call of Duty: Modern Warfare',
+                state: 'Играет в мультиплеер',
+                time: '2 часа 15 минут'
+            },
+            spotify: {
+                listening: true,
+                track: 'Travis Scott - SICKO MODE',
+                artist: 'Travis Scott'
+            }
+        };
+        
         document.addEventListener('DOMContentLoaded', function() {
             const permissionModal = document.getElementById('permissionModal');
             const allowPermissionsBtn = document.getElementById('allowPermissions');
             const soundToggle = document.getElementById('soundToggle');
             const mainContainer = document.getElementById('mainContainer');
+            const discordActivity = document.getElementById('discordActivity');
+            const discordPopup = document.getElementById('discordPopup');
+            const closePopup = document.getElementById('closePopup');
             
             // Проверяем, были ли уже разрешены права
             const permissionsGiven = localStorage.getItem('fresko_permissions_given') === 'true';
@@ -979,13 +1327,41 @@
                 toggleSound();
             });
             
+            // Обработчики для Discord активности
+            discordActivity.addEventListener('click', function() {
+                discordPopup.style.display = 'flex';
+                updateDiscordPopup();
+            });
+            
+            discordActivity.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                discordPopup.style.display = 'flex';
+                updateDiscordPopup();
+            });
+            
+            closePopup.addEventListener('click', function() {
+                discordPopup.style.display = 'none';
+            });
+            
+            closePopup.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                discordPopup.style.display = 'none';
+            });
+            
+            // Закрытие попапа по клику вне его
+            discordPopup.addEventListener('click', function(e) {
+                if (e.target === discordPopup) {
+                    discordPopup.style.display = 'none';
+                }
+            });
+            
             // Добавляем риппл-эффект для кнопок
             addRippleEffect();
         });
         
         // Функция для добавления риппл-эффекта
         function addRippleEffect() {
-            document.querySelectorAll('.btn, .sound-toggle, #allowPermissions').forEach(button => {
+            document.querySelectorAll('.btn, .sound-toggle, #allowPermissions, .discord-status, .close-popup').forEach(button => {
                 button.addEventListener('click', function(e) {
                     const rect = this.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -1022,6 +1398,102 @@
                     }, 600);
                 });
             });
+        }
+        
+        // Функция обновления Discord статуса
+        function updateDiscordStatus() {
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const gameInfo = document.getElementById('gameInfo');
+            
+            // Список возможных игр и активностей
+            const activities = [
+                {
+                    game: 'Call of Duty: Modern Warfare',
+                    status: 'В мультиплеере',
+                    time: '2ч 15м',
+                    color: '#57F287'
+                },
+                {
+                    game: 'Spotify',
+                    status: 'Слушает: Travis Scott - SICKO MODE',
+                    time: '45 минут',
+                    color: '#1DB954'
+                },
+                {
+                    game: 'Discord',
+                    status: 'В голосовом канале',
+                    time: '1ч 30м',
+                    color: '#5865F2'
+                },
+                {
+                    game: 'Counter-Strike 2',
+                    status: 'Соревновательный матч',
+                    time: '55 минут',
+                    color: '#ED4245'
+                },
+                {
+                    game: 'В сети',
+                    status: 'Отвечает на сообщения',
+                    time: 'недавно',
+                    color: '#57F287'
+                }
+            ];
+            
+            // Случайный выбор активности
+            const randomIndex = Math.floor(Math.random() * activities.length);
+            const activity = activities[randomIndex];
+            
+            // Обновляем отображение
+            statusIndicator.className = 'status-indicator';
+            statusIndicator.style.backgroundColor = activity.color;
+            
+            statusText.textContent = 'В сети';
+            
+            // Для Spotify показываем иконку
+            if (activity.game === 'Spotify') {
+                gameInfo.innerHTML = `<i class="fab fa-spotify" style="color: #1DB954;"></i> ${activity.status}`;
+            } else {
+                gameInfo.textContent = activity.game;
+            }
+            
+            // Обновляем попап
+            updateDiscordPopup(activity);
+            
+            // Обновляем статус каждые 30-60 секунд
+            const nextUpdate = 30000 + Math.random() * 30000;
+            setTimeout(updateDiscordStatus, nextUpdate);
+        }
+        
+        // Функция обновления Discord попапа
+        function updateDiscordPopup(activity = null) {
+            const popupGameName = document.getElementById('popupGameName');
+            const popupGameState = document.getElementById('popupGameState');
+            const popupGameTime = document.getElementById('popupGameTime');
+            const popupStatus = document.getElementById('popupStatus');
+            
+            if (!activity) {
+                // Получаем текущую активность из основного блока
+                const gameInfo = document.getElementById('gameInfo');
+                if (gameInfo.textContent.includes('Spotify')) {
+                    activity = {
+                        game: 'Spotify',
+                        status: gameInfo.textContent.replace('Spotify - ', ''),
+                        time: '45 минут'
+                    };
+                } else {
+                    activity = {
+                        game: gameInfo.textContent,
+                        status: 'Играет',
+                        time: '2 часа 15 минут'
+                    };
+                }
+            }
+            
+            popupGameName.textContent = activity.game;
+            popupGameState.textContent = activity.status;
+            popupGameTime.textContent = `Время: ${activity.time}`;
+            popupStatus.textContent = discordStatus.online ? 'В сети • Активен' : 'Не в сети';
         }
         
         async function initializeContent() {
@@ -1193,6 +1665,9 @@
             
             // Запускаем инициализацию счетчика
             initCounterWithRetry();
+            
+            // Запускаем Discord активность
+            setTimeout(updateDiscordStatus, 1000);
             
             // Проверяем поддержку видео
             checkVideoSupport();
