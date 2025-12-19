@@ -188,23 +188,52 @@
             }
         }
 
+        function getSessionId() {
+            let sessionId = localStorage.getItem('fresko_session_id');
+            if (!sessionId) {
+                sessionId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+                localStorage.setItem('fresko_session_id', sessionId);
+            }
+            return sessionId;
+        }
+
         async function updateCounter() {
             try {
                 if (!supabaseClient) {
                     console.warn('Supabase не подключен');
                     return;
                 }
-                
-                const { error } = await supabaseClient.rpc('increment_visits');
-                
-                if (error) {
-                    console.warn('Ошибка RPC:', error.message);
-                    await updateCounterDirectly();
+
+                const sessionId = getSessionId();
+
+                // Check if session already logged
+                const { data: existingVisit } = await supabaseClient
+                    .from('visit_logs')
+                    .select('id')
+                    .eq('session_id', sessionId)
+                    .single();
+
+                if (!existingVisit) {
+                    // New visit: increment counter and log
+                    const { error } = await supabaseClient.rpc('increment_visits');
+
+                    if (error) {
+                        console.warn('Ошибка RPC:', error.message);
+                        await updateCounterDirectly();
+                    }
+
+                    // Insert visit log
+                    await supabaseClient
+                        .from('visit_logs')
+                        .insert({
+                            session_id: sessionId,
+                            user_agent: navigator.userAgent
+                        });
                 }
-                
+
                 const totalVisits = await getTotalVisits();
                 animateCounter(totalVisits);
-                
+
             } catch (error) {
                 console.error('Ошибка счетчика:', error);
                 animateCounter(123);
@@ -323,4 +352,3 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
-</html>
