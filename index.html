@@ -138,69 +138,17 @@
             color: #fff;
             min-width: 20px;
             text-align: center;
+            transition: transform 0.3s ease;
         }
         
-        /* Telegram статус */
-        .telegram-section {
-            width: 100%;
-            max-width: 400px;
-            margin: 10px auto;
-            cursor: pointer;
+        .digit.animating {
+            animation: pop 0.5s ease;
         }
         
-        .telegram-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            height: 45px;
-            padding: 0 15px;
-            background: rgba(61, 59, 60, 0.3);
-            border-radius: 10px;
-            border: 1px solid #444;
-            transition: all 0.3s ease;
-        }
-        
-        .telegram-status:hover {
-            background: rgba(61, 59, 60, 0.5);
-        }
-        
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-        
-        .status-online { 
-            background: #00B894; 
-            box-shadow: 0 0 8px #00B894; 
-            animation: pulse 2s infinite; 
-        }
-        .status-offline { 
-            background: #ff3838;  /* КРАСНЫЙ цвет для оффлайн */
-            box-shadow: 0 0 8px #ff3838;
-        }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 184, 148, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 184, 148, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 184, 148, 0); }
-        }
-        
-        .status-text {
-            font-size: 14px;
-            color: #fff;
-            flex-grow: 1;
-            text-align: left;
-        }
-        
-        .activity-info {
-            font-size: 12px;
-            color: #aaa;
-            max-width: 150px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
         
         /* Кнопки - КРАСНЫЕ для всех */
@@ -303,105 +251,6 @@
             transform: translate(-50%, -50%) rotate(45deg);
         }
         
-        /* Telegram попап */
-        .telegram-popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .popup-content {
-            background: #1a1a1a;
-            border-radius: 15px;
-            padding: 20px;
-            width: 100%;
-            max-width: 450px;
-            border: 1px solid #ff3838; /* КРАСНАЯ граница */
-            position: relative;
-            box-shadow: 0 0 30px rgba(255, 56, 56, 0.2);
-        }
-        
-        .close-popup {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: #aaa;
-            font-size: 20px;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-        
-        .close-popup:hover {
-            color: #ff3838;
-        }
-        
-        .popup-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #333;
-        }
-        
-        .popup-header i {
-            color: #ff3838;
-            font-size: 24px;
-        }
-        
-        .activity-item {
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            margin-bottom: 12px;
-            border-left: 3px solid #ff3838;
-        }
-        
-        .activity-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 5px;
-        }
-        
-        .activity-state {
-            font-size: 14px;
-            color: #aaa;
-            margin-bottom: 8px;
-        }
-        
-        .activity-time {
-            font-size: 12px;
-            color: #888;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .time-icon {
-            color: #ff3838;
-        }
-        
-        .time-value {
-            color: #00B894;
-            font-weight: bold;
-        }
-        
-        .offline-time {
-            color: #ff3838;
-            font-weight: bold;
-        }
-        
         /* Адаптивность */
         @media (min-width: 768px) {
             .avatar-container {
@@ -452,16 +301,6 @@
                 font-size: 20px;
             }
             
-            .telegram-status {
-                height: 40px;
-                padding: 0 12px;
-            }
-            
-            .activity-info {
-                max-width: 120px;
-                font-size: 11px;
-            }
-            
             .buttons-container {
                 gap: 8px;
             }
@@ -485,6 +324,12 @@
         
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        
+        /* Progress animation */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -524,15 +369,6 @@
             </div>
         </div>
         
-        <!-- Telegram статус -->
-        <div class="telegram-section" id="telegramSection">
-            <div class="telegram-status">
-                <div class="status-indicator status-online" id="statusIndicator"></div>
-                <div class="status-text" id="statusText">Telegram статус</div>
-                <div class="activity-info" id="activityInfo">Загрузка...</div>
-            </div>
-        </div>
-        
         <!-- Кнопки -->
         <div class="buttons-container">
             <a href="https://t.me/+IjiAqcTamdNhM2E6" target="_blank" class="btn">
@@ -562,58 +398,6 @@
         </div>
     </div>
     
-    <!-- Telegram попап -->
-    <div class="telegram-popup" id="telegramPopup">
-        <div class="popup-content">
-            <button class="close-popup" id="closePopup">
-                <i class="fas fa-times"></i>
-            </button>
-            
-            <div class="popup-header">
-                <i class="fab fa-telegram"></i>
-                <h3>Telegram Статус</h3>
-            </div>
-            
-            <div class="popup-body">
-                <div class="activity-item">
-                    <div class="activity-name">Статус онлайн</div>
-                    <div class="activity-state" id="popupStatus">Загрузка статуса...</div>
-                    <div class="activity-time">
-                        <i class="fas fa-circle time-icon"></i>
-                        Статус: <span id="statusValue" class="time-value">🔄</span>
-                    </div>
-                </div>
-                
-                <div class="activity-item">
-                    <div class="activity-name">Время онлайн</div>
-                    <div class="activity-state">Последняя активность в Telegram</div>
-                    <div class="activity-time">
-                        <i class="fas fa-clock time-icon"></i>
-                        Был в сети: <span id="lastOnlineTime" class="time-value">загрузка...</span>
-                    </div>
-                </div>
-                
-                <div class="activity-item">
-                    <div class="activity-name">Информация</div>
-                    <div class="activity-state">Telegram ID: 1199383843828940880</div>
-                    <div class="activity-time">
-                        <i class="fas fa-sync-alt time-icon"></i>
-                        Обновлено: <span id="lastUpdateTime" class="time-value">только что</span>
-                    </div>
-                </div>
-                
-                <div class="activity-item" id="offlineInfo" style="display: none;">
-                    <div class="activity-name">Время оффлайн</div>
-                    <div class="activity-state">С момента выхода из сети прошло:</div>
-                    <div class="activity-time">
-                        <i class="fas fa-hourglass-end time-icon"></i>
-                        Оффлайн: <span id="offlineDuration" class="offline-time">0 минут</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Аудио для музыки -->
     <audio id="backgroundMusic" loop>
         <source src="Top.mp3" type="audio/mpeg">
@@ -624,18 +408,10 @@
         const SUPABASE_URL = 'https://gcxujsoqiywkiruzrqdg.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjeHVqc29xaXl3a2lydXpycWRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5MDY0MDIsImV4cCI6MjA4MTQ4MjQwMn0.B4HCviU2uMbUgtBILaFc5p0V6Pvj-0G8eKS-AEMu8as';
         
-        // Ваши данные
-        const TELEGRAM_USER_ID = '1199383843828940880';
-        const USER_USERNAME = 'Fresko';
-        
         // ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
         let backgroundMusic;
         let isMusicPlaying = true;
         let supabaseClient = null;
-        let statusUpdateInterval = null;
-        let currentStatus = null;
-        let lastOnlineTime = null;
-        let offlineStartTime = null;
 
         // ==================== ИНИЦИАЛИЗАЦИЯ ====================
         document.addEventListener('DOMContentLoaded', async function() {
@@ -648,27 +424,22 @@
                 // 2. Инициализация музыки
                 initMusic();
                 
-                // 3. Инициализация счетчика посещений
+                // 3. Инициализация счетчика посещений с анимацией
                 await initVisitCounter();
                 
-                // 4. Инициализация Telegram статуса
-                await initTelegramStatus();
-                
-                // 5. Настройка событий
+                // 4. Настройка событий
                 initEvents();
                 
-                // 6. Проверка видео
+                // 5. Проверка видео
                 checkVideoSupport();
                 
                 console.log('✅ Все системы запущены успешно!');
                 
-                // Периодическое обновление статуса
-                statusUpdateInterval = setInterval(updateTelegramStatus, 15000); // Каждые 15 секунд
-                
             } catch (error) {
                 console.error('❌ Ошибка инициализации:', error);
-                // Показываем базовый статус при ошибке
-                updateStatusDisplay('online', '🟢 В сети', 'Система загружена');
+                // Используем локальный счетчик при ошибке
+                const localCount = parseInt(localStorage.getItem('fresko_visit_count') || '123');
+                animateCounterDisplay(localCount);
             }
         });
 
@@ -678,20 +449,9 @@
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 console.log('✅ Supabase подключен');
                 
-                // Тестируем соединение
-                const { data, error } = await supabaseClient
-                    .from('telegram_status')
-                    .select('count')
-                    .limit(1);
-                
-                if (error) {
-                    console.warn('⚠️ Supabase таблицы могут потребовать создания');
-                    await createDatabaseTables();
-                }
-                
             } catch (error) {
                 console.error('❌ Ошибка подключения к Supabase:', error);
-                throw error;
+                // Продолжаем работу без Supabase
             }
         }
 
@@ -758,7 +518,7 @@
             }
         }
 
-        // ==================== СЧЕТЧИК ПОСЕЩЕНИЙ ====================
+        // ==================== СЧЕТЧИК ПОСЕЩЕНИЙ С АНИМАЦИЕЙ ====================
         async function initVisitCounter() {
             try {
                 // Генерируем уникальный ID посещения
@@ -785,12 +545,14 @@
                 
                 // Получаем общее количество посещений
                 const totalVisits = await getTotalVisits();
-                displayCounter(totalVisits);
+                
+                // Анимируем отображение счетчика
+                await animateCounterDisplay(totalVisits);
                 
             } catch (error) {
                 console.error('❌ Ошибка счетчика:', error);
                 const localCount = parseInt(localStorage.getItem('fresko_visit_count') || '123');
-                displayCounter(localCount);
+                await animateCounterDisplay(localCount);
             }
         }
 
@@ -819,9 +581,12 @@
         async function getTotalVisits() {
             try {
                 if (!supabaseClient) {
-                    throw new Error('Supabase не доступен');
+                    // Используем локальное значение если Supabase не доступен
+                    const localCount = parseInt(localStorage.getItem('fresko_visit_count') || '0');
+                    return Math.max(localCount, 1);
                 }
                 
+                // Пробуем получить точное количество
                 const { count, error } = await supabaseClient
                     .from('visits')
                     .select('*', { count: 'exact', head: true });
@@ -839,355 +604,113 @@
                     return Math.max(data.length, 1);
                 }
                 
-                throw new Error('Не удалось получить данные');
+                // Используем локальное значение
+                const localCount = parseInt(localStorage.getItem('fresko_visit_count') || '123');
+                return Math.max(localCount, 1);
                 
             } catch (error) {
                 console.warn('⚠️ Ошибка получения счетчика:', error.message);
-                const localCount = parseInt(localStorage.getItem('fresko_visit_count') || '0');
-                return Math.max(localCount, 123);
+                const localCount = parseInt(localStorage.getItem('fresko_visit_count') || '123');
+                return Math.max(localCount, 1);
             }
         }
 
-        function displayCounter(number) {
+        async function animateCounterDisplay(targetNumber) {
             const counterDisplay = document.getElementById('counterDisplay');
             if (!counterDisplay) return;
             
+            // Очищаем текущее отображение
             counterDisplay.innerHTML = '';
             
-            const formattedNumber = number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            // Преобразуем число в строку с пробелами
+            const formattedNumber = targetNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             const digits = formattedNumber.split('');
             
-            digits.forEach(digit => {
+            // Создаем элементы для каждой цифры
+            const digitElements = digits.map(() => {
                 const digitElement = document.createElement('div');
                 digitElement.className = 'digit';
-                digitElement.textContent = digit;
-                counterDisplay.appendChild(digitElement);
-            });
-        }
-
-        // ==================== TELEGRAM СТАТУС ====================
-        async function initTelegramStatus() {
-            console.log('📱 Инициализация Telegram статуса...');
-            
-            // Начальный статус
-            updateStatusDisplay('online', 'Telegram статус', 'Загрузка...');
-            
-            // Загружаем последний статус из базы
-            await loadLastStatus();
-            
-            // Первое обновление
-            await updateTelegramStatus();
-        }
-
-        async function loadLastStatus() {
-            try {
-                if (!supabaseClient) return;
-                
-                const { data, error } = await supabaseClient
-                    .from('telegram_status')
-                    .select('*')
-                    .eq('user_id', TELEGRAM_USER_ID)
-                    .order('last_online', { ascending: false })
-                    .limit(1)
-                    .single();
-                
-                if (!error && data) {
-                    currentStatus = data;
-                    lastOnlineTime = new Date(data.last_online);
-                    
-                    // Если статус offline, сохраняем время когда вышел
-                    if (data.status === 'offline' && data.last_online) {
-                        offlineStartTime = new Date(data.last_online);
-                    }
-                    
-                    updateStatusFromData(data);
-                }
-                
-            } catch (error) {
-                console.warn('⚠️ Ошибка загрузки статуса:', error);
-            }
-        }
-
-        async function updateTelegramStatus() {
-            try {
-                console.log('🔄 Обновление статуса Telegram...');
-                
-                // Получаем текущий статус от бота через API
-                const statusData = await fetchTelegramStatus();
-                
-                if (statusData) {
-                    // Сохраняем в базу данных
-                    await saveStatusToDatabase(statusData);
-                    
-                    // Обновляем отображение
-                    updateStatusFromData(statusData);
-                    
-                    // Обновляем время последнего обновления
-                    updateLastUpdateTime();
-                    
-                } else {
-                    // Если API не отвечает, используем последние данные
-                    await loadLastStatus();
-                }
-                
-            } catch (error) {
-                console.error('❌ Ошибка обновления статуса:', error);
-                
-                // Резервный статус
-                updateStatusDisplay('online', 'Telegram', 'Соединение...');
-            }
-        }
-
-        async function fetchTelegramStatus() {
-            try {
-                // Здесь будет реальный запрос к API вашего бота
-                // Пока используем симуляцию со случайным статусом
-                
-                // В реальном боте здесь будет запрос к Telegram API
-                // для проверки онлайн статуса пользователя
-                
-                // СИМУЛЯЦИЯ (замените на реальный API вызов)
-                const simulatedStatus = await simulateTelegramStatus();
-                return simulatedStatus;
-                
-            } catch (error) {
-                console.warn('⚠️ Ошибка API Telegram:', error);
-                return null;
-            }
-        }
-
-        async function simulateTelegramStatus() {
-            // Случайный статус (в реальном боте это будет реальная проверка)
-            const now = new Date();
-            const isOnline = Math.random() > 0.3; // 70% онлайн
-            
-            if (isOnline) {
-                lastOnlineTime = now;
-                offlineStartTime = null;
-                
-                return {
-                    user_id: TELEGRAM_USER_ID,
-                    username: USER_USERNAME,
-                    status: 'online',
-                    status_text: '🟢 В сети сейчас',
-                    last_online: now.toISOString(),
-                    updated_at: now.toISOString()
-                };
-            } else {
-                // Оффлайн - случайное время от 5 до 60 минут назад
-                const minutesOffline = 5 + Math.floor(Math.random() * 55);
-                const offlineTime = new Date(now.getTime() - minutesOffline * 60000);
-                
-                if (!offlineStartTime) {
-                    offlineStartTime = offlineTime;
-                }
-                
-                return {
-                    user_id: TELEGRAM_USER_ID,
-                    username: USER_USERNAME,
-                    status: 'offline',
-                    status_text: '🔴 Не в сети',
-                    last_online: offlineTime.toISOString(),
-                    updated_at: now.toISOString(),
-                    offline_minutes: minutesOffline
-                };
-            }
-        }
-
-        async function saveStatusToDatabase(statusData) {
-            try {
-                if (!supabaseClient) return;
-                
-                const { error } = await supabaseClient
-                    .from('telegram_status')
-                    .insert({
-                        user_id: statusData.user_id,
-                        username: statusData.username,
-                        status: statusData.status,
-                        status_text: statusData.status_text,
-                        last_online: statusData.last_online,
-                        updated_at: statusData.updated_at
-                    });
-                
-                if (error) {
-                    console.warn('⚠️ Ошибка сохранения статуса:', error.message);
-                } else {
-                    console.log('💾 Статус сохранен в БД');
-                }
-                
-                // Обновляем текущий статус
-                currentStatus = statusData;
-                
-            } catch (error) {
-                console.warn('⚠️ Ошибка БД:', error);
-            }
-        }
-
-        function updateStatusFromData(data) {
-            if (!data) return;
-            
-            const status = data.status || 'online';
-            const statusText = data.status_text || '🟢 В сети';
-            let activity = '';
-            
-            if (status === 'online') {
-                activity = 'В сети сейчас';
-                offlineStartTime = null;
-            } else {
-                // Рассчитываем время оффлайн
-                if (data.last_online) {
-                    const lastOnline = new Date(data.last_online);
-                    const now = new Date();
-                    const diffMinutes = Math.floor((now - lastOnline) / 60000);
-                    
-                    if (diffMinutes < 1) {
-                        activity = 'Был(а) только что';
-                    } else if (diffMinutes < 60) {
-                        activity = `Был(а) ${diffMinutes} мин назад`;
-                    } else {
-                        const hours = Math.floor(diffMinutes / 60);
-                        activity = `Был(а) ${hours} ч назад`;
-                    }
-                } else {
-                    activity = 'Не в сети';
-                }
-            }
-            
-            updateStatusDisplay(status, statusText, activity);
-            
-            // Обновляем данные для попапа
-            updatePopupData(data);
-        }
-
-        function updateStatusDisplay(status, statusText, activity) {
-            const indicator = document.getElementById('statusIndicator');
-            const textElement = document.getElementById('statusText');
-            const activityElement = document.getElementById('activityInfo');
-            
-            if (!indicator || !textElement || !activityElement) return;
-            
-            // Обновляем индикатор
-            indicator.className = 'status-indicator';
-            if (status === 'online') {
-                indicator.classList.add('status-online');
-            } else {
-                indicator.classList.add('status-offline');
-            }
-            
-            // Обновляем текст
-            textElement.textContent = statusText.replace(/[🟢🔴🟡⚫]/g, '').trim();
-            
-            // Обновляем активность
-            let displayActivity = activity || '';
-            const maxLength = window.innerWidth <= 480 ? 18 : 22;
-            if (displayActivity.length > maxLength) {
-                displayActivity = displayActivity.substring(0, maxLength - 3) + '...';
-            }
-            
-            activityElement.textContent = displayActivity;
-        }
-
-        function updatePopupData(data) {
-            if (!data) return;
-            
-            const statusValue = document.getElementById('statusValue');
-            const lastOnlineTimeEl = document.getElementById('lastOnlineTime');
-            const offlineInfo = document.getElementById('offlineInfo');
-            const offlineDuration = document.getElementById('offlineDuration');
-            
-            if (statusValue) {
-                statusValue.textContent = data.status === 'online' ? '🟢 В сети' : '🔴 Не в сети';
-                statusValue.className = data.status === 'online' ? 'time-value' : 'offline-time';
-            }
-            
-            if (lastOnlineTimeEl && data.last_online) {
-                const lastOnline = new Date(data.last_online);
-                const now = new Date();
-                const diffMinutes = Math.floor((now - lastOnline) / 60000);
-                
-                if (diffMinutes < 1) {
-                    lastOnlineTimeEl.textContent = 'только что';
-                } else if (diffMinutes < 60) {
-                    lastOnlineTimeEl.textContent = `${diffMinutes} минут назад`;
-                } else {
-                    const hours = Math.floor(diffMinutes / 60);
-                    lastOnlineTimeEl.textContent = `${hours} часов назад`;
-                }
-            }
-            
-            // Показываем информацию об оффлайн времени
-            if (offlineInfo && offlineDuration && data.status === 'offline' && offlineStartTime) {
-                offlineInfo.style.display = 'block';
-                const now = new Date();
-                const diffMinutes = Math.floor((now - offlineStartTime) / 60000);
-                
-                if (diffMinutes < 60) {
-                    offlineDuration.textContent = `${diffMinutes} минут`;
-                } else {
-                    const hours = Math.floor(diffMinutes / 60);
-                    const minutes = diffMinutes % 60;
-                    offlineDuration.textContent = `${hours}ч ${minutes}м`;
-                }
-            } else if (offlineInfo) {
-                offlineInfo.style.display = 'none';
-            }
-        }
-
-        function updateLastUpdateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('ru-RU', {
-                hour: '2-digit',
-                minute: '2-digit'
+                digitElement.textContent = '0';
+                return digitElement;
             });
             
-            const updateElement = document.getElementById('lastUpdateTime');
-            if (updateElement) {
-                updateElement.textContent = timeString;
+            // Добавляем элементы в DOM
+            digitElements.forEach(element => {
+                counterDisplay.appendChild(element);
+            });
+            
+            // Функция для анимации счетчика
+            async function animateDigits() {
+                return new Promise(resolve => {
+                    const duration = 2000; // 2 секунды анимации
+                    const steps = 60; // Количество шагов
+                    const stepTime = duration / steps;
+                    
+                    let currentStep = 0;
+                    
+                    const animateStep = () => {
+                        currentStep++;
+                        
+                        // Рассчитываем текущее значение для каждого шага
+                        const progress = currentStep / steps;
+                        const currentValue = Math.floor(targetNumber * progress);
+                        
+                        // Форматируем текущее значение
+                        const currentFormatted = currentValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                        const currentDigits = currentFormatted.split('');
+                        
+                        // Обновляем каждую цифру
+                        digitElements.forEach((element, index) => {
+                            const digit = index < currentDigits.length ? currentDigits[index] : '0';
+                            element.textContent = digit;
+                            
+                            // Анимация только что изменившейся цифры
+                            if (digit !== element.getAttribute('data-last')) {
+                                element.classList.add('animating');
+                                setTimeout(() => {
+                                    element.classList.remove('animating');
+                                }, 500);
+                                element.setAttribute('data-last', digit);
+                            }
+                        });
+                        
+                        if (currentStep < steps) {
+                            setTimeout(animateStep, stepTime);
+                        } else {
+                            // Финальное обновление
+                            const finalFormatted = targetNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                            const finalDigits = finalFormatted.split('');
+                            
+                            digitElements.forEach((element, index) => {
+                                const digit = index < finalDigits.length ? finalDigits[index] : '0';
+                                element.textContent = digit;
+                                element.classList.add('animating');
+                                setTimeout(() => {
+                                    element.classList.remove('animating');
+                                }, 500);
+                            });
+                            
+                            resolve();
+                        }
+                    };
+                    
+                    // Запускаем анимацию
+                    setTimeout(animateStep, stepTime);
+                });
             }
+            
+            // Запускаем анимацию
+            await animateDigits();
+            
+            // Добавляем класс для завершения анимации
+            counterDisplay.style.animation = 'countUp 0.5s ease';
         }
 
         // ==================== СОБЫТИЯ ====================
         function initEvents() {
-            // Telegram попап
-            const telegramSection = document.getElementById('telegramSection');
-            const telegramPopup = document.getElementById('telegramPopup');
-            const closePopup = document.getElementById('closePopup');
-            
-            if (telegramSection) {
-                telegramSection.addEventListener('click', openTelegramPopup);
-            }
-            
-            if (closePopup && telegramPopup) {
-                closePopup.addEventListener('click', closeTelegramPopup);
-                telegramPopup.addEventListener('click', (e) => {
-                    if (e.target === telegramPopup) closeTelegramPopup();
-                });
-            }
-            
             // Предотвращаем масштабирование
             document.addEventListener('gesturestart', (e) => e.preventDefault());
             document.addEventListener('dblclick', (e) => e.preventDefault());
-        }
-
-        function openTelegramPopup(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const popup = document.getElementById('telegramPopup');
-            if (!popup) return;
-            
-            // Обновляем данные в попапе
-            if (currentStatus) {
-                updatePopupData(currentStatus);
-            }
-            
-            updateLastUpdateTime();
-            popup.style.display = 'flex';
-        }
-
-        function closeTelegramPopup() {
-            const popup = document.getElementById('telegramPopup');
-            if (popup) popup.style.display = 'none';
         }
 
         // ==================== ПРОВЕРКА ВИДЕО ====================
@@ -1210,30 +733,10 @@
             });
         }
 
-        // ==================== СОЗДАНИЕ БАЗЫ ДАННЫХ ====================
-        async function createDatabaseTables() {
-            console.log('🛠 Создание таблиц базы данных...');
-            
-            // Таблицы будут созданы через SQL в Supabase
-            // Здесь только логируем
-            console.log('📊 Таблицы должны быть созданы через SQL Editor в Supabase');
-        }
-
         // ==================== ОБРАБОТЧИКИ ЗАКРЫТИЯ ====================
         window.addEventListener('beforeunload', () => {
-            if (statusUpdateInterval) {
-                clearInterval(statusUpdateInterval);
-            }
-            
             if (backgroundMusic) {
                 backgroundMusic.pause();
-            }
-        });
-
-        // ==================== АВТООБНОВЛЕНИЕ ПРИ ВОЗВРАТЕ ====================
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                updateTelegramStatus();
             }
         });
 
@@ -1241,8 +744,7 @@
         setTimeout(() => {
             console.log('🎉 Система Fresko полностью запущена!');
             console.log('🔊 Музыка:', isMusicPlaying ? 'включена' : 'выключена');
-            console.log('📱 Telegram статус:', currentStatus ? 'активен' : 'симуляция');
-            console.log('📊 Счетчик посещений: работает');
+            console.log('📊 Счетчик посещений: работает с анимацией');
         }, 2000);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
