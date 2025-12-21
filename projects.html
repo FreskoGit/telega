@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Проекты - Fresko</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+        html,body{width:100%;height:100%;overflow-y:auto;background:#000;color:#fff;font-family:'Segoe UI',system-ui,sans-serif}
+        body{padding:80px 15px 30px;display:flex;flex-direction:column;align-items:center}
+        .background{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2}
+        #background-video{width:100%;height:100%;object-fit:cover;opacity:0.15}
+        .back-btn{position:fixed;top:15px;left:15px;width:40px;height:40px;background:rgba(61,59,60,0.9);border:1px solid #444;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;cursor:pointer;z-index:1000;font-size:18px;transition:all 0.3s ease;text-decoration:none}
+        .back-btn:hover{transform:scale(1.1);background:#ff3838}
+        .sound-toggle{position:fixed;top:15px;right:15px;width:40px;height:40px;background:rgba(61,59,60,0.9);border:1px solid #444;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;cursor:pointer;z-index:1000;font-size:18px;transition:all 0.3s ease}
+        .sound-toggle:hover{transform:scale(1.1);background:#ff3838}
+        .sound-toggle.muted::after{content:'';position:absolute;top:50%;left:50%;width:24px;height:2px;background:#ff3838;transform:translate(-50%,-50%) rotate(45deg)}
+        .page-title{font-size:32px;font-weight:700;background:linear-gradient(45deg,#fff,#aaa);-webkit-background-clip:text;background-clip:text;color:transparent;text-align:center;margin-bottom:30px}
+        .cards-container{display:flex;flex-direction:column;gap:25px;width:100%;max-width:500px;margin-top:20px}
+        .card{background:rgba(61,59,60,0.3);border-radius:15px;border:1px solid #444;padding:20px;transition:all 0.3s ease}
+        .card:hover{transform:translateY(-5px);box-shadow:0 10px 20px rgba(0,0,0,0.3)}
+        .card-image{width:100%;height:200px;object-fit:cover;border-radius:10px;margin-bottom:15px}
+        .card-title{font-size:20px;font-weight:bold;margin-bottom:10px;color:#fff}
+        .card-description{color:#aaa;font-size:14px;line-height:1.5;margin-bottom:20px}
+        .card-btn{height:45px;background:linear-gradient(145deg,#ff3838,#ff5757);color:white;border:none;border-radius:10px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all 0.3s ease;cursor:pointer;width:100%}
+        .card-btn:hover{background:linear-gradient(145deg,#ff5757,#ff3838);transform:translateY(-3px);box-shadow:0 5px 15px rgba(255,56,56,0.3)}
+        .click-counter{text-align:center;margin-top:10px;font-size:12px;color:#888}
+        @media (max-width:480px){.page-title{font-size:24px}.card{padding:15px}.card-image{height:150px}}
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background">
+        <video id="background-video" autoplay loop muted playsinline>
+            <source src="fon.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up"></i>
+    </button>
+    
+    <h1 class="page-title">Проекты</h1>
+    
+    <div class="cards-container">
+        <div class="card">
+            <img src="project1.png" alt="Проект 1" class="card-image" onerror="this.style.display='none'">
+            <div class="card-title">Название проекта 1</div>
+            <div class="card-description">Описание первого проекта. Здесь вы можете рассказать о целях, задачах и особенностях данного проекта.</div>
+            <button class="card-btn" data-url="https://t.me/+uU4P1t0F3p85YzFi" data-counter="project1">
+                <i class="fas fa-external-link-alt"></i>
+                <span>Перейти к проекту</span>
+            </button>
+            <div class="click-counter" id="counter-project1">переходов: 0</div>
+        </div>
+        
+        <div class="card">
+            <img src="project2.png" alt="Проект 2" class="card-image" onerror="this.style.display='none'">
+            <div class="card-title">Название проекта 2</div>
+            <div class="card-description">Описание второго проекта. Расскажите о том, чем занимается этот проект и какие возможности он предоставляет.</div>
+            <button class="card-btn" data-url="https://t.me/DurovChannelStars" data-counter="project2">
+                <i class="fas fa-external-link-alt"></i>
+                <span>Перейти к проекту</span>
+            </button>
+            <div class="click-counter" id="counter-project2">переходов: 0</div>
+        </div>
+        
+        <div class="card">
+            <img src="project1.png" alt="Проект 3" class="card-image" onerror="this.style.display='none'">
+            <div class="card-title">Название проекта 3</div>
+            <div class="card-description">Описание третьего проекта. Здесь можно описать дополнительный проект или инициативу.</div>
+            <button class="card-btn" data-url="https://t.me/ProjectFresko" data-counter="project3">
+                <i class="fas fa-external-link-alt"></i>
+                <span>Перейти к проекту</span>
+            </button>
+            <div class="click-counter" id="counter-project3">переходов: 0</div>
+        </div>
+    </div>
+    
+    <audio id="backgroundMusic" loop>
+        <source src="Top.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const SUPABASE_URL = 'https://gcxujsoqiywkiruzrqdg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjeHVqc29xaXl3a2lydXpycWRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5MDY0MDIsImV4cCI6MjA4MTQ4MjQwMn0.B4HCviU2uMbUgtBILaFc5p0V6Pvj-0G8eKS-AEMu8as';
+        
+        let backgroundMusic;
+        let isMusicPlaying = true;
+        let supabaseClient = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Страница проектов загружена');
+            
+            // Настройка музыки
+            setupMusic();
+            
+            // Инициализируем Supabase
+            try {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('Supabase подключен');
+            } catch (error) {
+                console.error('Ошибка Supabase:', error);
+            }
+            
+            // Загружаем счетчики кликов
+            await loadClickCounters();
+            
+            // Настройка кнопок
+            setupButtons();
+            
+            // Предотвращение масштабирования
+            document.addEventListener('gesturestart', (e) => e.preventDefault());
+            document.addEventListener('dblclick', (e) => e.preventDefault());
+        });
+
+        function setupMusic() {
+            backgroundMusic = document.getElementById('backgroundMusic');
+            const soundToggle = document.getElementById('soundToggle');
+            
+            if (!backgroundMusic) return;
+            
+            backgroundMusic.volume = 0.4;
+            
+            const savedMuted = localStorage.getItem('fresko_music_muted');
+            if (savedMuted === 'true') {
+                backgroundMusic.muted = true;
+                soundToggle.classList.add('muted');
+                isMusicPlaying = false;
+            }
+            
+            const unlockAudio = () => {
+                try {
+                    backgroundMusic.play().catch(e => console.log('Аудио:', e));
+                } catch (e) {}
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('touchstart', unlockAudio);
+            };
+            
+            document.addEventListener('click', unlockAudio);
+            document.addEventListener('touchstart', unlockAudio);
+            
+            setTimeout(() => {
+                try {
+                    backgroundMusic.play().catch(e => console.log('Автоплей:', e));
+                } catch (e) {}
+            }, 500);
+            
+            soundToggle.addEventListener('click', toggleMusic);
+        }
+
+        function toggleMusic() {
+            if (!backgroundMusic) return;
+            
+            isMusicPlaying = !isMusicPlaying;
+            backgroundMusic.muted = !isMusicPlaying;
+            
+            const soundToggle = document.getElementById('soundToggle');
+            
+            if (isMusicPlaying) {
+                soundToggle.classList.remove('muted');
+                localStorage.setItem('fresko_music_muted', 'false');
+            } else {
+                soundToggle.classList.add('muted');
+                localStorage.setItem('fresko_music_muted', 'true');
+            }
+        }
+
+        async function loadClickCounters() {
+            const counters = ['project1', 'project2', 'project3'];
+            
+            for (const counterId of counters) {
+                try {
+                    if (supabaseClient) {
+                        // Пытаемся получить из Supabase
+                        const { data, error } = await supabaseClient
+                            .from('click_counters')
+                            .select('count')
+                            .eq('id', counterId)
+                            .single();
+                        
+                        if (error || !data) {
+                            // Создаем новую запись
+                            await supabaseClient
+                                .from('click_counters')
+                                .insert({ 
+                                    id: counterId, 
+                                    count: 0 
+                                });
+                            
+                            updateCounterDisplay(counterId, 0);
+                        } else {
+                            updateCounterDisplay(counterId, data.count);
+                        }
+                    } else {
+                        // Используем localStorage
+                        const localCount = localStorage.getItem(`fresko_${counterId}_clicks`) || 0;
+                        updateCounterDisplay(counterId, parseInt(localCount));
+                    }
+                } catch (error) {
+                    console.error('Ошибка загрузки счетчика:', error);
+                    const localCount = localStorage.getItem(`fresko_${counterId}_clicks`) || 0;
+                    updateCounterDisplay(counterId, parseInt(localCount));
+                }
+            }
+        }
+
+        function updateCounterDisplay(counterId, count) {
+            const counterElement = document.getElementById(`counter-${counterId}`);
+            if (counterElement) {
+                counterElement.textContent = `переходов: ${count}`;
+            }
+        }
+
+        function setupButtons() {
+            const buttons = document.querySelectorAll('.card-btn');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', async function() {
+                    const url = this.getAttribute('data-url');
+                    const counterId = this.getAttribute('data-counter');
+                    
+                    // Увеличиваем счетчик
+                    await incrementCounter(counterId);
+                    
+                    // Открываем ссылку
+                    window.open(url, '_blank');
+                });
+            });
+        }
+
+        async function incrementCounter(counterId) {
+            try {
+                let newCount = 1;
+                
+                if (supabaseClient) {
+                    // Получаем текущее значение
+                    const { data, error } = await supabaseClient
+                        .from('click_counters')
+                        .select('count')
+                        .eq('id', counterId)
+                        .single();
+                    
+                    if (!error && data) {
+                        newCount = data.count + 1;
+                        
+                        // Обновляем в Supabase
+                        await supabaseClient
+                            .from('click_counters')
+                            .update({ count: newCount })
+                            .eq('id', counterId);
+                    } else {
+                        // Создаем новую запись
+                        await supabaseClient
+                            .from('click_counters')
+                            .insert({ 
+                                id: counterId, 
+                                count: 1 
+                            });
+                    }
+                }
+                
+                // Сохраняем в localStorage
+                const localCount = parseInt(localStorage.getItem(`fresko_${counterId}_clicks`) || 0);
+                newCount = localCount + 1;
+                localStorage.setItem(`fresko_${counterId}_clicks`, newCount);
+                
+                // Обновляем отображение
+                updateCounterDisplay(counterId, newCount);
+                
+            } catch (error) {
+                console.error('Ошибка увеличения счетчика:', error);
+                
+                // Используем только localStorage
+                const localCount = parseInt(localStorage.getItem(`fresko_${counterId}_clicks`) || 0);
+                const newCount = localCount + 1;
+                localStorage.setItem(`fresko_${counterId}_clicks`, newCount);
+                updateCounterDisplay(counterId, newCount);
+            }
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (backgroundMusic) {
+                backgroundMusic.pause();
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</body>
+</html>
